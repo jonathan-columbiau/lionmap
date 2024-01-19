@@ -5,7 +5,7 @@ Authors@R:
     person("Jonathan", "Algoo", , "ja3527@cumc.columbia.edu", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: This package performs consensus classification on single cell 
-    datasets. Components are modular, and can be used standalone. 
+    datasets. Components are modular, and can be used standalone.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
