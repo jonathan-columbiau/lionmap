@@ -33,3 +33,5 @@ Imports:
     treeio
 Remotes: 
     bnprks/BPCells
+URL: https://github.com/jonathan-columbiau/lionmap
+BugReports: https://github.com/jonathan-columbiau/lionmap/issues
