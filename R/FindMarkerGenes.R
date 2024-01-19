@@ -1,0 +1,114 @@
+FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metadata_cluster_column = "cell_type", metadata_cell_label_column = "cellid",n_cells_sampled = 500) {
+
+  #unit test: ref_metadata is a dataframe
+  test_that("ref_metadata is a dataframe (not a tibble)", {
+    # Assuming ref_metadata is defined in your environment
+    expect_true(is.data.frame(ref_metadata) & !is.tbl(ref_metadata))
+  })
+  test_that("The cluster column is in the metadata", {
+    # Assuming ref_metadata is defined in your environment
+    expect_true(metadata_cluster_column %in% colnames(ref_metadata))
+  })
+
+  test_that("The cell label column is in the metadata", {
+    # Assuming ref_metadata is defined in your environment
+    expect_true(metadata_cell_label_column %in% colnames(ref_metadata))
+  })
+
+
+
+  #Unit test 1: ref_bpcells is a bpcells object - else throw error
+  test_that("ref_bpcells param is a bpcells object", {
+    expect_equal(class(ref_bpcells) %>% attr("package"),"BPCells")
+  })
+  #1) Normalize reference atlas.
+  # Normalize by reads-per-cell
+  ref_bpcells <- multiply_cols(ref_bpcells, 1/Matrix::colSums(ref_bpcells))
+  # Log normalization
+  ref_bpcells <- log1p(ref_bpcells * 10000) # Log normalization
+  #save to disk to make it quick
+  marker_genes <- vector(mode = "list")
+  internal_nodes <- tree@phylo$node.label
+  direct_child_nodes <- vector(mode = "list", length = length(internal_nodes))
+  for (i in 1:length(internal_nodes)) {
+    child_node_number_ids <- child(tree, internal_nodes[i])
+    child_node_labels <- nodelab(tree, id = child_node_number_ids)
+    direct_child_nodes[[i]] <- child_node_labels
+  }
+  names(direct_child_nodes) <- internal_nodes
+
+  child_node_labels <- direct_child_nodes %>% unlist(use.names = F)
+  descendant_tip_nodes <- vector(mode = "list", length = length(child_node_labels))
+  names(descendant_tip_nodes) <- child_node_labels
+
+  #add functionality for same-level classification only (tree structure is useless in this case)
+  if(length(internal_nodes) == 1) {
+    for (i in 1:length(child_node_labels)) {
+      descendant_tip_nodes[[i]] <- child_node_labels[i]
+    }
+
+  } else {
+    for (i in 1:length(child_node_labels)) {
+      descendant_tip_nodes[[i]] <- offspring(tree,child_node_labels[i], type = "tips") %>% nodelab(tree,.)
+    }
+    #remove tip nodes from the above list of lists (they don't have any children nodes so their positions will have a length of 0)
+    descendant_tip_nodes <- descendant_tip_nodes[lapply(descendant_tip_nodes,length)>0]
+    specified_tip_nodes <- descendant_tip_nodes %>% unlist(use.names = F) %>% unique()
+
+
+  }
+
+  for (i in 1:length(internal_nodes)) { #iterate over each parent node
+    specified_ancestor_node <- names(direct_child_nodes)[i]
+    direct_children_of_specified_ancestor_nodes_vector <- direct_child_nodes[[specified_ancestor_node]]
+    child_node_round_robin_matchups <- pairwise_combinations(direct_children_of_specified_ancestor_nodes_vector)
+    list_with_matchups <- vector(mode = "list")
+    for (j in 1:length(child_node_round_robin_matchups)) {
+      node1 <- child_node_round_robin_matchups[[j]]$cluster1
+      node2 <- child_node_round_robin_matchups[[j]]$cluster2
+      compared_nodes <- c(node1, node2)
+      if (node1 %in% names(descendant_tip_nodes)) {
+        node1_tip_nodes <- descendant_tip_nodes[[node1]]
+      } else {
+        node1_tip_nodes <- node1
+      }
+      if (node2 %in% names(descendant_tip_nodes)) {
+        node2_tip_nodes <- descendant_tip_nodes[[node2]]
+      } else {
+        node2_tip_nodes <- node2
+      }
+
+      #name the matchup of interest
+      list_with_matchups[[j]] <- list("compared_nodes" = compared_nodes)
+      names(list_with_matchups)[j] <- paste0(node1, " vs ", node2)
+      #match colnames with class
+      cells_node_1 <- ref_metadata[ref_metadata[,metadata_cluster_column] %in% c(node1_tip_nodes),metadata_cell_label_column]
+      cells_node_2 <- ref_metadata[ref_metadata[,metadata_cluster_column] %in% c(node2_tip_nodes),metadata_cell_label_column]
+      #sample cells
+      if(length(cells_node_1) > n_cells_sampled) {
+        cells_node_1 <- cells_node_1 %>% sample(n_cells_sampled)
+      }
+      if(length(cells_node_2) > n_cells_sampled) {
+        cells_node_2 <- cells_node_2 %>% sample(n_cells_sampled)
+      }
+
+      subset_atlas <-ref_bpcells[, c(cells_node_1, cells_node_2)]
+      celltype_labels <- c(rep(node1, length(cells_node_1)), rep(node2, length(cells_node_2))) %>% as.factor()
+      pairwise_markers <- marker_features(subset_atlas, celltype_labels, method = "wilcoxon")
+      #remove genes with less than 1 logCPM in either
+      pairwise_markers %<>% dplyr::filter(foreground_mean > 1 |background_mean > 1) %>% dplyr::select(-background) %>% dplyr::distinct(feature, .keep_all = TRUE) %>% dplyr::mutate(log2_fc = log2(foreground_mean/background_mean))
+
+      #get log2fc, and select the top marker genes with the highest abs value log2fc
+      pairwise_markers %<>% mutate(abs_log2_fc = log2(foreground_mean/background_mean) %>% abs()) %>% arrange(abs_log2_fc) %>% slice_max(abs_log2_fc, n = n_genes) %>% pull(feature)
+      list_with_matchups[[j]] <- c(list_with_matchups[[j]],list(marker_genes = pairwise_markers))
+
+    }
+    marker_genes[[i]] <-  list_with_matchups
+
+  }
+
+  #set naming and return list
+  names(marker_genes) <- internal_nodes
+  marker_genes
+
+}
