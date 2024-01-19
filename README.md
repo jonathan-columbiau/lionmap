@@ -1,3 +1,3 @@
-To install, install the remotes library and write:
-
-remotes::install_github("jonathan-columbiau/lionmap")
+To install:
+1) install the remotes library
+2) enter: remotes::install_github("jonathan-columbiau/lionmap")
