@@ -1,3 +1,24 @@
+#' Finds marker genes at each hierarchical level specified by the tree, using the GE matrix
+#' provided in the ref_bpcells parameter, and the celltype labels provided in the input to ref_metadata. It
+#' identifies marker genes by using a function provided in the BPCells package,
+#' marker_features, which finds genes using the Wilcoxon test.
+#'
+#' @param ref_bpcells A GE reference dataset in BPCells format.
+#' @param ref_metadata A dataframe with metadata that includes a column providing
+#' celltype labels used for classification and a column providing cell ids.
+#' @param tree A tree structure (in treedata format) to find marker genes for. Will find marker genes
+#' that distinguish pairs of classes at each level of the hierarchy.
+#' @param n_genes Number of marker genes, per pairwise class, you want to find.
+#' @param metadata_cluster_column The name of the column in the metadata giving the celltype labels.
+#' @param metadata_cell_label_column The name of the column in the metadata giving the cell IDs.
+#' @param n_cells_sampled Number of cells per class used to find marker genes.
+#'
+#' @return A list providing marker genes that distinguish each pairwise combination of celltypes, at each
+#' level of the hierarchy in the tree you provided.
+#' @export
+#'
+#' @examples
+#' FindMarkerGenes(ref_bpcells, ref_metadata)
 FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metadata_cluster_column = "cell_type", metadata_cell_label_column = "cellid",n_cells_sampled = 500) {
 
   #unit test: ref_metadata is a dataframe

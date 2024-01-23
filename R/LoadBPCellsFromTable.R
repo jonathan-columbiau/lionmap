@@ -1,3 +1,14 @@
+#' Helper function which uses the fread function from the data.table library to
+#' read in a GE dataset in BPCells format.
+#'
+#' @param filename Name of file
+#' @param dir_name Name of BPCells obj
+#'
+#' @return BPCells-formatted GE matrix
+#' @export
+#'
+#' @examples
+#' LoadBPCellsFromTable(filename, dir_name = "bpcells_dataset")
 LoadBPCellsFromTable <- function(filename, dir_name = "new_dataset") {
   dataset <- data.table::fread(filename) %>% .[,2:ncol(.)] %>% as.data.frame()
   removed_gene_names <- dataset$gene_name[duplicated(dataset$gene_name)]

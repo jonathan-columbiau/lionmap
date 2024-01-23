@@ -1,3 +1,14 @@
+#' Align BPCells Objects so they both have the same genes.
+#'
+#' @param bpcells_obj1 First BPCells Object
+#' @param bpcells_obj2 Second BPCells Object
+#'
+#' @return The first BPCells object put in the bpcells_obj1 parameter.
+#' @export
+#'
+#' @examples
+#' bpcells_obj1 = AlignBPCellsObjs(bpcells_obj1, bpcells_obj2)
+#' bpcells_obj2 = AlignBPCellsObjs(bpcells_obj2, bpcells_obj1)
 AlignBPCellsObjs <- function(bpcells_obj1, bpcells_obj2) {
   #only keep genes with at least 1 cell expressed and found in both datasets
   genes_expressed_obj1 <- rowSums(bpcells_obj1) %>% .[.!=0] %>% names()

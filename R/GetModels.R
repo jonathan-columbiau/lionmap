@@ -1,3 +1,23 @@
+#' Function that gives models trained to differentiate all pairwise matchups.
+#'
+#' @param marker_genes List with marker genes returned by the FindMarkerGenes function.
+#' @param ref_bpcells BPCells obj with reference dataset GE values
+#' @param ref_metadata Dataframe with metadata on each cell in reference dataset.
+#' @param tree Tree structure in treedata format.
+#' @param metadata_cluster_column Metadata celltype label column.
+#' @param metadata_cell_label_column Metadata cell ID column
+#' @param n_cells_sampled Number of cells used in pairwise model determination for each class.
+#' @param models_to_include Optional vector which provides the names of models to include. If using
+#' this parameter, include a subset of the following (make sure the names match or it won't work):
+#' "linear_svm", "polynomial_svm", "naive_bayes", "ridge", "lasso", "elastic_net",
+#'  "linear_da", "knn", "rf", "quadratic_da"
+#' @param npcs Optional parameter giving number of PCs to use in model creation.
+#'
+#' @return List of models that differentiates each pairwise matchup.
+#' @export
+#'
+#' @examples
+#' GetModels(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cluster_column = "cluster_label", metadata_cell_label_column = "cell_label", n_cells_sampled = 500, models_to_include = NULL, npcs = 5)
 GetModels <- function(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cluster_column = "cluster_label", metadata_cell_label_column = "cell_label", n_cells_sampled = 500, models_to_include = NULL, npcs = 5) {
   #unit test: ref_metadata is a dataframe
   test_that("ref_metadata is a dataframe (not a tibble)", {

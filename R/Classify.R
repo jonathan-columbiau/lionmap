@@ -1,3 +1,19 @@
+#' Classification function that takes in input dataset (in BPCells format), alongside
+#' created models and the tree structure and provides a vector of classifications.
+#'
+#' @param bpcells_query Query dataset already aligned to reference dataset used to find marker genes and create models.
+#' @param models Models created through GetMarkerGenes function.
+#' @param tree_struc Tree used in model creation.
+#' @param prop_max_threshold Proportion of evidence required for a test
+#'
+#' @return A vector providing classifications of cells in bpcells_query in the same order.
+#' Performs specific unit testing on each run through.
+#' Unit test 1: all remaining cells assigned to internal nodes
+#' Unit test 2: expected number of elements returned
+#' @export
+#'
+#' @examples
+#' Classify(query_obj, models, tree)
 Classify <- function(bpcells_query, models, tree_struc, prop_max_threshold = .66) {
   # initial rootnode level - do all at once. All tree_struc have rootnodes, even if all clusters are at one level
   rootnode <- tree_struc %>%

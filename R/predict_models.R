@@ -1,3 +1,14 @@
+#' Helper function returning predicted classifications (formats and returns
+#' consistent output forvarious packages)
+#'
+#' @param model A model
+#' @param model_name Name of model (must be one of the model names in package)
+#' @param nonsparse_mat PCA-transformed matrix of query dataset
+#'
+#' @return Predicted Classifications
+#' @export
+#'
+#' @examples predict_models(lasso_model, "lasso", pca_transformed_matrix)
 predict_models <- function(model, model_name, nonsparse_mat) {
   if (model_name %in% c("ridge", "lasso", "elastic_net")) {
     predict(model, nonsparse_mat, s = "lambda.1se", type = "class") %>% as.character() %>% set_names(rownames(nonsparse_mat)) %>%  return()
