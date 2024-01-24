@@ -45,5 +45,8 @@ List of models that differentiates each pairwise matchup.
 Function that gives models trained to differentiate all pairwise matchups.
 }
 \examples{
-GetModels(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cluster_column = "cluster_label", metadata_cell_label_column = "cell_label", n_cells_sampled = 500, models_to_include = NULL, npcs = 5)
+GetModels(marker_genes, ref_bpcells, ref_metadata, tree,
+metadata_cluster_column = "cluster_label",
+metadata_cell_label_column = "cell_label",
+n_cells_sampled = 500, models_to_include = NULL, npcs = 5)
 }

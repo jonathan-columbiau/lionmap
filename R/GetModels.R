@@ -17,7 +17,10 @@
 #' @export
 #'
 #' @examples
-#' GetModels(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cluster_column = "cluster_label", metadata_cell_label_column = "cell_label", n_cells_sampled = 500, models_to_include = NULL, npcs = 5)
+#' GetModels(marker_genes, ref_bpcells, ref_metadata, tree,
+#' metadata_cluster_column = "cluster_label",
+#' metadata_cell_label_column = "cell_label",
+#' n_cells_sampled = 500, models_to_include = NULL, npcs = 5)
 GetModels <- function(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cluster_column = "cluster_label", metadata_cell_label_column = "cell_label", n_cells_sampled = 500, models_to_include = NULL, npcs = 5) {
   #unit test: ref_metadata is a dataframe
   test_that("ref_metadata is a dataframe (not a tibble)", {
