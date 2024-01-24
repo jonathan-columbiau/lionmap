@@ -22,3 +22,4 @@ with this dataset (since Seurat also supports BPCells).
 \examples{
 LoadBPCellsObjToSeurat(bpcells_dir, metadata_df)
 }
+\keyword{internal}

@@ -5,7 +5,7 @@
 #' @param metadata Dataframe of metadata for BPCells cells
 #'
 #' @return Seurat object with BPCells obj as GE matrix
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' LoadBPCellsObjToSeurat(bpcells_dir, metadata_df)

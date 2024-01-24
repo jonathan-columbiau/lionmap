@@ -22,3 +22,4 @@ read in a GE dataset in BPCells format.
 \examples{
 LoadBPCellsFromTable(filename, dir_name = "bpcells_dataset")
 }
+\keyword{internal}

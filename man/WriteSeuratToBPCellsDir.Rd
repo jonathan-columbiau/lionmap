@@ -24,3 +24,4 @@ assays/RNA/counts to bpcells directory
 \examples{
 WriteSeuratToBPCellsDir(seurat_obj, bpcells_dir, "cellid")
 }
+\keyword{internal}

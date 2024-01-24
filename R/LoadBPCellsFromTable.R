@@ -5,7 +5,7 @@
 #' @param dir_name Name of BPCells obj
 #'
 #' @return BPCells-formatted GE matrix
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' LoadBPCellsFromTable(filename, dir_name = "bpcells_dataset")

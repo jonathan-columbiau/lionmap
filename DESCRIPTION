@@ -17,7 +17,6 @@ Imports:
     dplyr,
     e1071,
     ggplot2,
-    ggtree,
     glmnet,
     magrittr,
     MASS,
@@ -29,8 +28,7 @@ Imports:
     stringr,
     testthat,
     tidyr,
-    tidytree,
-    treeio
+    tidytree
 Remotes: 
     bnprks/BPCells
 URL: https://github.com/jonathan-columbiau/lionmap

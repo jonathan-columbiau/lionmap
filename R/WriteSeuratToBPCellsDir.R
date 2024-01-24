@@ -6,7 +6,7 @@
 #' @param cell_label_column Cell label column name in Seurat object metadata
 #'
 #' @return BPCells GE matrix
-#' @export
+#' @keywords internal
 #'
 #' @examples WriteSeuratToBPCellsDir(seurat_obj, bpcells_dir, "cellid")
 WriteSeuratToBPCellsDir <- function(seurat_obj,dir_name,cell_label_column = "cellid") {

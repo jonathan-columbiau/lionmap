@@ -3,7 +3,7 @@
 #' @param directory_name Name of directory with BPCells Object.
 #'
 #' @return BPCells obj
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' LoadBPCellsObj(bpcells_dir_name)

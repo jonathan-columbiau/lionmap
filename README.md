@@ -6,6 +6,8 @@ The package only works using BPCells matrices as input. BPCells is a package tha
 
 Easy install:
 
-1) install the remotes library 2) enter: remotes::install_github("jonathan-columbiau/lionmap")
+1)  install the remotes library
 
-If that doesn't work, there are some packages you have to manually install in order to get Lionmap to work properly. All of them are available as repositories either on Github, Bioconductor, or CRAN (if the easy install option doesn't work). See the error message you're getting for the names of the package you have to install manually.
+2)  enter: remotes::install_github("jonathan-columbiau/lionmap")
+
+If that doesn't work, there are some packages you have to manually install in order to get Lionmap to work properly. All of them are available as repositories either on Github, Bioconductor, or CRAN . Look at the error message you're getting for the names of the package you have to install manually.

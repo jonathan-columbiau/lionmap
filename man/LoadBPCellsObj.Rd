@@ -18,3 +18,4 @@ Helper function that loads BPCells obj already created
 \examples{
 LoadBPCellsObj(bpcells_dir_name)
 }
+\keyword{internal}
