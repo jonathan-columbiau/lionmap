@@ -33,5 +33,5 @@ Imports:
     tidytree
 Remotes: 
     bnprks/BPCells
-URL: https://github.com/jonathan-columbiau/lionmap
+URL: https://github.com/jonathan-columbiau/lionmap, https://jonathan-columbiau.github.io/lionmap/
 BugReports: https://github.com/jonathan-columbiau/lionmap/issues
