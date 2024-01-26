@@ -4,7 +4,7 @@
 #' @param celltype_labels Celltype labels in vector
 #'
 #' @return naive_bayes model trained on evenly split dataset (upsamples if classes aren't evenly split)
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' ex_model = naive_bayes(reference_dataset, celltype_labels)

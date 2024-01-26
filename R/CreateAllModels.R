@@ -10,7 +10,7 @@
 #'  "linear_da", "knn", "rf", "quadratic_da"
 #'
 #' @return List of Models
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' CreateAllModels(reference_dataset, celltype_labels, models_to_include = NULL)

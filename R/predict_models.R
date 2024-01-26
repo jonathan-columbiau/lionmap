@@ -6,7 +6,7 @@
 #' @param nonsparse_mat PCA-transformed matrix of query dataset
 #'
 #' @return Predicted Classifications
-#' @export
+#' @keywords internal
 #'
 #' @examples predict_models(lasso_model, "lasso", pca_transformed_matrix)
 predict_models <- function(model, model_name, nonsparse_mat) {

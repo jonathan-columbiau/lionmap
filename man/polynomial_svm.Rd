@@ -20,3 +20,4 @@ polynomial_svm  helper function
 \examples{
 ex_model = polynomial_svm(reference_dataset, celltype_labels)
 }
+\keyword{internal}

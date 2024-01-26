@@ -20,3 +20,4 @@ Binomial ridge helper function
 \examples{
 ex_model = binomial_ridge(reference_dataset, celltype_labels)
 }
+\keyword{internal}

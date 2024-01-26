@@ -20,3 +20,4 @@ Binomial lasso helper function
 \examples{
 ex_model = binomial_lasso(reference_dataset, celltype_labels)
 }
+\keyword{internal}

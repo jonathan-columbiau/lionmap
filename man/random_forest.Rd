@@ -20,3 +20,4 @@ Random Forest  helper function (uses ranger backend)
 \examples{
 ex_model = random_forest(reference_dataset, celltype_labels)
 }
+\keyword{internal}

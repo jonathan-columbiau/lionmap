@@ -4,7 +4,7 @@
 #' @param cluster.names Vector of names/celltype labels
 #'
 #' @return List of pairwise combinations
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' pairwise_combinations(names_vector)

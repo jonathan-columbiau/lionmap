@@ -20,3 +20,4 @@ linear_svm  helper function
 \examples{
 ex_model = linear_svm(reference_dataset, celltype_labels)
 }
+\keyword{internal}

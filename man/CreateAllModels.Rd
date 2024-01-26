@@ -29,3 +29,4 @@ models used to differentiate celltypes.
 \examples{
 CreateAllModels(reference_dataset, celltype_labels, models_to_include = NULL)
 }
+\keyword{internal}

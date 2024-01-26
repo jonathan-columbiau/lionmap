@@ -20,3 +20,4 @@ Quadratic discriminant analysis  helper function
 \examples{
 ex_model = quadratic_da(reference_dataset, celltype_labels)
 }
+\keyword{internal}

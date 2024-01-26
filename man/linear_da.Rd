@@ -20,3 +20,4 @@ linear_da  helper function
 \examples{
 ex_model = linear_da(reference_dataset, celltype_labels)
 }
+\keyword{internal}

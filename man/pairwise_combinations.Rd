@@ -20,3 +20,4 @@ of names.
 \examples{
 pairwise_combinations(names_vector)
 }
+\keyword{internal}

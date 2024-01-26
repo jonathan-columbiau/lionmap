@@ -20,3 +20,4 @@ knn  helper function
 \examples{
 ex_model = knn(reference_dataset, celltype_labels)
 }
+\keyword{internal}

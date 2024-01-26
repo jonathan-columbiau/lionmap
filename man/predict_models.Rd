@@ -24,3 +24,4 @@ consistent output forvarious packages)
 \examples{
 predict_models(lasso_model, "lasso", pca_transformed_matrix)
 }
+\keyword{internal}

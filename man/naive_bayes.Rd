@@ -20,3 +20,4 @@ naive_bayes  helper function
 \examples{
 ex_model = naive_bayes(reference_dataset, celltype_labels)
 }
+\keyword{internal}

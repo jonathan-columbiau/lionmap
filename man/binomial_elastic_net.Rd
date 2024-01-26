@@ -20,3 +20,4 @@ Binomial elastic net helper function
 \examples{
 ex_model = binomial_elastic_net(reference_dataset, celltype_labels)
 }
+\keyword{internal}
