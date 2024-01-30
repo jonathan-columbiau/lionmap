@@ -3,8 +3,11 @@ title: "Basic-Tutorial"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Basic-Tutorial}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r, include = FALSE}
@@ -14,19 +17,101 @@ knitr::opts_chunk$set(
 )
 ```
 
-Need to install the SeuratData package for the vignette/tutorial. We're using it
-just because it has accessible datasets with classifications (stored in the Seurat 
-metadata field!). Let us know if you have any issues accessing the data needed
-for this tutorial.
+Need to install the SeuratData package for the vignette/tutorial. We're
+using it just because it has accessible datasets with classifications
+(stored in the Seurat metadata field!). Let us know if you have any
+issues accessing the data needed for this tutorial.
+
 ```{r setup}
 library(lionmap)
 library(SeuratData)
+library(Seurat)
+library(BPCells)
+library(caret)
 InstallData("pbmc3k")
-data("pbmc3k")
+UpdateSeuratObject(pbmc3k) #just Seurat updating things to get it to work
 ```
 
-Make a tree that assumes 
+1.  Get gene expression data in a BPCells matrix and cell type
+    classifications for each cell in the dataset.
+
+Steps: a. Set a variable to the gene expression matrix of counts stored
+in the Seurat object. These should be raw counts, not processed, scaled,
+or normalized post-alignment.
+
+b.  Convert the matrix into a BPCells-formatted object using the
+    write_matrix_memory or write_matrix_dir functions.
+
+Write_matrix_dir stores the GE data in a file on your computer, which is
+one of the reasons why it's less memory intensive than other file
+formats.
+
+If you're not working from a Seurat object, you can do this with any of
+the BPCells-accepted file formats (normal matrices or sparse matrices
+currently). See the BPCells vignette for more info on how to load your
+file into the BPCells format (found here:
+<https://bnprks.github.io/BPCells/index.html> ).
+
+c. Get the classifications of each cell stored in the Seurat object metadata, with 
+the cell ID the name of the cell.
 ```{r}
-pbmc3k
+#a. Set a variable to the gene expression matrix of counts stored in the Seurat object. 
+ge_matrix = pbmc3k@assays$RNA@counts
+
+#b. Convert the matrix into a BPCells-formatted object using the write_matrix_memory or write_matrix_dir functions. 
+ge_bpcells = write_matrix_memory(ge_matrix)
+
+#c. Get the classifications of each cell stored in the Seurat object metadata.
+classifications = pbmc3k@meta.data$seurat_annotations
+names(classifications) = rownames(pbmc3k@meta.data)
+
+```
+
+2. Split the bpcells object and classifications into a train/test set, so we can test
+how well our classification system works using cells from the same dataset. 
+
+Note: We're going to get rid of cell classes with a low number of cells (< 30) in our dataset
+because there may not be enough info to accurately assign these cells a classification.
+
+Steps:
+a. Remove classes with less than 30 cells from the ge and annotations dataset.
+b. Make an 80/20 train/test split, where we assign a variable to a matrix containing
+the cells we'll use for our reference (train set) and the cells we'll use for 
+testing whether our classification process works (test set). 
+```{r}
+#a. Remove classes with less than 30 cells. For the pbmc3k dataset, the data is stored with
+#rows as gene names and columns as cell IDs. 
+classes_to_remove = names(table(classifications))[table(classifications) <= 30] 
+#only the platelet class has < 30 cells
+
+#identify which cells to remove, and get their positions in the bpcells dataset
+cells_to_remove = which(classifications %in% classes_to_remove)
+
+ge_bpcells = ge_bpcells[,-cells_to_remove]
+#make sure to also remove the corresponding classifications of the cells we just
+#removed from the classifications vector!
+classifications = classifications[-cells_to_remove]
+classifications = droplevels(classifications)
+
+#b. Make an 80/20 train/test split, where we assign a variable to a matrix containing
+#the cells we'll use for our reference (train set) and the cells we'll use for 
+#testing whether our classification process works (test set). 
+
+#we'll use the CreateDataPartition function from the caret package to do this. 
+#this function takes in a vector of classes, and a proportion to split each class by,
+#and returns the ids to keep in the training set. The remaining ids are the ones we
+#keep in the testing set. 
+train_ids = createDataPartition(classifications, p = .8)
+train_ids = train_ids$Resample1#just have this line to get a vector, as opposed to a list
+                                #with a vector of positions (which is what the function                                     #normally returns)
+test_ids = which(! seq(1,length(classifications)) %in% train_ids)
+train_ge_bpcells = ge_bpcells[,train_ids]
+test_ge_bpcells = ge_bpcells[,test_ids]
+
+#Use the same split to separate the classifications vector into
+#a train/test split.
+train_classifications = classifications[train_ids]
+test_classifications = classifications[test_ids]
+
 ```
 
