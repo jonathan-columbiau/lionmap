@@ -1,0 +1,32 @@
+---
+title: "Basic-Tutorial"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Basic-Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Need to install the SeuratData package for the vignette/tutorial. We're using it
+just because it has accessible datasets with classifications (stored in the Seurat 
+metadata field!). Let us know if you have any issues accessing the data needed
+for this tutorial.
+```{r setup}
+library(lionmap)
+library(SeuratData)
+InstallData("pbmc3k")
+data("pbmc3k")
+```
+
+Make a tree that assumes 
+```{r}
+pbmc3k
+```
+
