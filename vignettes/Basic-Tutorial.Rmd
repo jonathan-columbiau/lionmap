@@ -52,8 +52,14 @@ currently). See the BPCells vignette for more info on how to load your
 file into the BPCells format (found here:
 <https://bnprks.github.io/BPCells/index.html> ).
 
-c. Get the classifications of each cell stored in the Seurat object metadata, with 
-the cell ID the name of the cell.
+c.  Get a dataframe containing metadata with each cell represented as a
+    row. We'll store the classifications of each cell as a column in the
+    metadata, and the IDs of each cell as another column. Since Seurat
+    already provides classifications in their metadata dataframe in the
+    seurat_annotations column, we're all set for that column! Seurat
+    stores cell IDs as rownames, so we'll add a column called cell_label
+    to represent the cell IDs with the same info
+
 ```{r}
 #a. Set a variable to the gene expression matrix of counts stored in the Seurat object. 
 ge_matrix = pbmc3k@assays$RNA@counts
@@ -61,26 +67,29 @@ ge_matrix = pbmc3k@assays$RNA@counts
 #b. Convert the matrix into a BPCells-formatted object using the write_matrix_memory or write_matrix_dir functions. 
 ge_bpcells = write_matrix_memory(ge_matrix)
 
-#c. Get the classifications of each cell stored in the Seurat object metadata.
-classifications = pbmc3k@meta.data$seurat_annotations
-names(classifications) = rownames(pbmc3k@meta.data)
-
+#c. Get the metadata of each cell stored in the Seurat object.
+metadata = pbmc3k@meta.data#$seurat_annotations
+metadata$cell_label = rownames(metadata)
 ```
 
-2. Split the bpcells object and classifications into a train/test set, so we can test
-how well our classification system works using cells from the same dataset. 
+2.  Split the bpcells object and classifications into a train/test set,
+    so we can test how well our classification system works using cells
+    from the same dataset.
 
-Note: We're going to get rid of cell classes with a low number of cells (< 30) in our dataset
-because there may not be enough info to accurately assign these cells a classification.
+Note: We're going to get rid of cell classes with a low number of cells
+(\< 30) in our dataset because there may not be enough info to
+accurately assign these cells a classification.
 
-Steps:
-a. Remove classes with less than 30 cells from the ge and annotations dataset.
-b. Make an 80/20 train/test split, where we assign a variable to a matrix containing
-the cells we'll use for our reference (train set) and the cells we'll use for 
-testing whether our classification process works (test set). 
+Steps: a. Remove classes with less than 30 cells from the ge and
+annotations dataset. b. Make an 80/20 train/test split, where we assign
+a variable to a matrix containing the cells we'll use for our reference
+(train set) and the cells we'll use for testing whether our
+classification process works (test set).
+
 ```{r}
 #a. Remove classes with less than 30 cells. For the pbmc3k dataset, the data is stored with
 #rows as gene names and columns as cell IDs. 
+classifications = metadata$seurat_annotations
 classes_to_remove = names(table(classifications))[table(classifications) <= 30] 
 #only the platelet class has < 30 cells
 
@@ -90,8 +99,8 @@ cells_to_remove = which(classifications %in% classes_to_remove)
 ge_bpcells = ge_bpcells[,-cells_to_remove]
 #make sure to also remove the corresponding classifications of the cells we just
 #removed from the classifications vector!
-classifications = classifications[-cells_to_remove]
-classifications = droplevels(classifications)
+metadata = metadata[-cells_to_remove,]
+metadata$seurat_annotations = droplevels(classifications)
 
 #b. Make an 80/20 train/test split, where we assign a variable to a matrix containing
 #the cells we'll use for our reference (train set) and the cells we'll use for 
@@ -101,17 +110,99 @@ classifications = droplevels(classifications)
 #this function takes in a vector of classes, and a proportion to split each class by,
 #and returns the ids to keep in the training set. The remaining ids are the ones we
 #keep in the testing set. 
-train_ids = createDataPartition(classifications, p = .8)
+train_ids = caret::createDataPartition(metadata$seurat_annotations, p = .8)
 train_ids = train_ids$Resample1#just have this line to get a vector, as opposed to a list
                                 #with a vector of positions (which is what the function                                     #normally returns)
-test_ids = which(! seq(1,length(classifications)) %in% train_ids)
+test_ids = which(! seq(1,nrow(metadata)) %in% train_ids)
 train_ge_bpcells = ge_bpcells[,train_ids]
 test_ge_bpcells = ge_bpcells[,test_ids]
 
-#Use the same split to separate the classifications vector into
-#a train/test split.
-train_classifications = classifications[train_ids]
-test_classifications = classifications[test_ids]
+#Use the same split to separate the metadata vector into
+#a train/test split. This works because the indices of the metadata 
+#and of the GE matrix match, so a subset to one would give data corresponding to
+#the same cells for the subset to the other
+train_metadata = metadata[train_ids,]
+test_ge_bpcells = metadata[test_ids,]
 
 ```
 
+Now that we have a reference dataset (train_ge_pbcells) and a vector of
+classifications for each cell in the reference (train_classifications),
+we can begin finding marker genes that separate our cell classes! We'll
+then use these marker genes later on to create models that can classify
+cells to a cell type.
+
+Well, actually there's one thing we need to do that, which is create a
+tree that describes the hierarchy of our cell classifications. A tree
+describes the structure of the data (see the Creating Custom Trees page
+for more info), and is one of the unique aspects of this package - the
+ability to create a structure to embed info on plausible
+classifications, and to use that info to make better classifications.
+For this basic tutorial, we'll just assume there's no hierarchical
+structure, and that celltypes are equally likely to be assigned to any
+of the possible classes (an equal tree). I've created a helper function,
+CreateEqualTree, to do this, which just takes in a vector of possible
+cell classes, and creates an equal tree for you.
+
+You'll need to install the treeio package from Bioconductor to get this
+to work. Check it out [here for install
+info](https://bioconductor.org/packages/release/bioc/html/treeio.html):
+
+```{r}
+possible_cell_classes = train_metadata$seurat_annotations %>% unique()
+equal_tree = CreateEqualTree(cell_labels = possible_cell_classes)
+#OPTIONAL: let's visualize the tree we created (have to install ggtree on bioconductor to do this)
+#ggtree(equal_tree) +geom_nodelab(geom = "label", node = "all") 
+```
+
+Awesome, now we can find marker genes using our reference dataset. The
+FindMarkerGenes function does this for us. We'll need to input the
+following info:
+
+1.  Our reference GE dataset in BPCells format (**ref_bpcells**)
+
+2.  Our dataframe containing info on each cell (**ref_metadata**)
+
+3.  The tree we created (**tree**)
+
+4.  The name of the column in the metadata giving the cell type
+    (**metadata_cluster_column**)
+
+5.  The name of the column in the metadata giving the cell ID
+    (**metadata_cell_label_column**)
+
+And optionally we can change the **ngenes** parameter, which allows us
+to choose the number of genes we find that distinguishes each pair of
+corresponding cells, or the **n_cells_sampled** parameter, which allows
+us to choose the number of cells we sample to find differences for each
+particular pair of celltypes.
+
+```{r}
+marker_genes = FindMarkerGenes(ref_bpcells = train_ge_bpcells, ref_metadata = train_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
+```
+
+If it works, we should get a bunch of nonsense messages printed to the
+output talking about writing temporary files on your computer. Under the
+hood, the file is subsetting the GE matrix to contain 500 cells from two
+cell classes, writing that data to a temporary file on your computer,
+and then using that dataset to find marker genes that distinguish the
+classes. It does this for each of the possible pairs of cell classes you
+could create.
+
+We'll also get all the marker genes that distinguish each pair of cell
+classes! Let's take a look at the output, stored in the marker_genes
+variable. Write the following to explore the output (if you're using
+RStudio) and then read on ahead for more info.
+
+```{r}
+View(marker_genes)
+
+```
+
+Since Lionmap works on a hierarchy, we have a rootnode (the common node
+from which all cell types descend). That's what the list is named for.
+And at each level of the list, we have a sublist with marker genes that
+distinguish two cell classes (ex: MemoryCD4T vs B). We see this for all
+the matchups.
+
+Now we can use this set of marker genes to create our list of models!

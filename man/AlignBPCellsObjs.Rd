@@ -2,7 +2,8 @@
 % Please edit documentation in R/AlignBPCellsObjs.R
 \name{AlignBPCellsObjs}
 \alias{AlignBPCellsObjs}
-\title{Align BPCells Objects so they both have the same genes.}
+\title{Align BPCells Objects so they both have the same genes (useful for getting reference and
+query datasets in the proper format before finding marker genes).}
 \usage{
 AlignBPCellsObjs(bpcells_obj1, bpcells_obj2)
 }
@@ -15,7 +16,8 @@ AlignBPCellsObjs(bpcells_obj1, bpcells_obj2)
 The first BPCells object put in the bpcells_obj1 parameter.
 }
 \description{
-Align BPCells Objects so they both have the same genes.
+Align BPCells Objects so they both have the same genes (useful for getting reference and
+query datasets in the proper format before finding marker genes).
 }
 \examples{
 bpcells_obj1 = AlignBPCellsObjs(bpcells_obj1, bpcells_obj2)

@@ -1,4 +1,5 @@
-#' Align BPCells Objects so they both have the same genes.
+#' Align BPCells Objects so they both have the same genes (useful for getting reference and
+#' query datasets in the proper format before finding marker genes).
 #'
 #' @param bpcells_obj1 First BPCells Object
 #' @param bpcells_obj2 Second BPCells Object
