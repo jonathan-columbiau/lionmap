@@ -30,6 +30,7 @@ Imports:
     stats,
     stringr,
     testthat,
+    treeio,
     tidyr,
     tidytree
 Remotes: 
