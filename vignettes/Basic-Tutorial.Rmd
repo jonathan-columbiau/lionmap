@@ -22,11 +22,12 @@ using it just because it has accessible datasets with classifications
 (stored in the Seurat metadata field!). Let us know if you have any
 issues accessing the data needed for this tutorial.
 
-```{r setup}
+```{r}
 library(lionmap)
 library(SeuratData)
 library(Seurat)
 library(BPCells)
+library(magrittr)
 library(caret)
 InstallData("pbmc3k")
 UpdateSeuratObject(pbmc3k) #just Seurat updating things to get it to work
@@ -127,7 +128,7 @@ test_ge_bpcells = ge_bpcells[,test_ids]
 #and of the GE matrix match, so a subset to one would give data corresponding to
 #the same cells for the subset to the other
 train_metadata = metadata[train_ids,]
-test_ge_bpcells = metadata[test_ids,]
+test_ge_metadata = metadata[test_ids,]
 
 ```
 
@@ -266,6 +267,45 @@ that didn't mean anything to you, don't worry, it's just something about
 properly formatting the data). We'll use all these models in the next
 step, to classify cells to specific celltypes.
 
+To classify cells to previously defined celltypes, we'll use the
+Classify function and will need to enter the following:
+
+1.  Our dataset with raw (not normalized/processed) GE values of cells
+    we want to classify (**bpcells_query**)
+
+2.  The list of models produced by GetModels (**models**)
+
+3.  The tree we created (**tree_struc**)
+
+And we can optionally set the parameter prop_max_threshold, which allows
+us to set the confidence threshold we need to have in order to classify
+a cell.
+
+The output is a vector giving the celltype classifications for each cell
+in the query dataset.
+
 ```{r}
-query_classifications = Classify(bpcells_query = test_)
+query_classifications = Classify(bpcells_query = test_ge_bpcells,models = models,tree_struc = equal_tree)
 ```
+
+Awesome! Now we have a vector of classifications, formatted so the name
+of each element is the cell label and the value is the classification of
+that cell. Let's view the first few elements.
+
+```{r}
+head(query_classifications)
+```
+
+We can view the number of classifications to each type using the table
+function.
+
+```{r}
+table(query_classifications)
+
+```
+
+We'll see that one cell has the classification "Rootnode". This
+indicates that there wasn't enough evidence to properly classify the
+cell. If we used a custom hierarchy, classification occurs at each level
+of the hierarchy, and stops at a given level of the tree if there's not
+enough evidence to continue.

@@ -5,7 +5,7 @@
 \title{This function is meant for users who don't want to use the tree-based/hierarchical functionality of the package.
 It creates a tree that assumes that all the celltype labels are at the same level of the tree.}
 \usage{
-CreateEqualTree(cell_labels, rootnode_name = "Unmapped")
+CreateEqualTree(cell_labels, rootnode_name = "Rootnode")
 }
 \arguments{
 \item{cell_labels}{Vector of celltype labels we want to create a tree with. Don't include duplicate celltype labels.}

@@ -41,7 +41,7 @@ Classify <- function(bpcells_query, models, tree_struc, prop_max_threshold = .66
       first_lev_avg_counts <- models[[node]][[i]]$avg_log_exp # scale
       first_lev_std_counts <- models[[node]][[i]]$stdev
       first_lev_markers <- models[[node]][[i]]$pc_loadings %>% colnames()
-      first_lev_bpcells <- query_cells[first_lev_markers, cells] %>% t() # select markers and cells of this internal node level
+      first_lev_bpcells <- query_cells[first_lev_markers, cells] %>% BPCells::t() # select markers and cells of this internal node level
       first_lev_bpcells <- first_lev_bpcells %>%
         BPCells::add_cols(-first_lev_avg_counts) %>%
         BPCells::multiply_cols(1 / first_lev_std_counts)
@@ -68,7 +68,7 @@ Classify <- function(bpcells_query, models, tree_struc, prop_max_threshold = .66
       dplyr::group_by(obs) %>%
       dplyr::filter(count == max(count))
     #filter obs with mult max classes
-    tied_obs <- obs_above_threshold %>% dplyr::group_by(obs) %>% dplyr::summarise(n = n()) %>% dplyr::filter(n > 1) %>% dplyr::pull(obs)
+    tied_obs <- obs_above_threshold %>% dplyr::group_by(obs) %>% dplyr::summarise(n = dplyr::n()) %>% dplyr::filter(n > 1) %>% dplyr::pull(obs)
     obs_above_threshold <- obs_above_threshold %>%
       dplyr::filter(!obs %in% tied_obs) %>%
       dplyr::filter(count >= count_threshold) %>%
