@@ -11,7 +11,7 @@
 #'
 #' @examples
 #' CreateEqualTree(celltype_labels)
-CreateEqualTree <- function(cell_labels, rootnode_name = "Unmapped") {
+CreateEqualTree <- function(cell_labels, rootnode_name = "Rootnode") {
   tree_newick_format <- paste0("(",stringr::str_c(unique(na.omit(cell_labels)), collapse = ","),")",rootnode_name,";") %>% .[!is.na(.)]
   treeio::read.newick(textConnection(tree_newick_format), node.label = "label") %>% treeio::as.treedata()
 }

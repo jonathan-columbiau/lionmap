@@ -87,20 +87,25 @@ a variable to a matrix containing the cells we'll use for our reference
 classification process works (test set).
 
 ```{r}
-#a. Remove classes with less than 30 cells. For the pbmc3k dataset, the data is stored with
-#rows as gene names and columns as cell IDs. 
+#a. Remove classes with less than 30 cells, and any cell with no cell type classification. For the pbmc3k dataset, the data is stored with rows as gene names and columns as cell IDs. 
+
+#this is important - we need to make sure the metadata celltype label column is formatted properly. To work with the package, you need to remove all spaces from the cell type annotations. You can do this in one line by using the str_replace_all function from the stringr package:
+metadata$seurat_annotations = gsub(" ", "", metadata$seurat_annotations, fixed = TRUE)
+metadata$seurat_annotations <- metadata$seurat_annotations %>% as.factor()#changing column type back as factor
+#refactor now
+
+
 classifications = metadata$seurat_annotations
 classes_to_remove = names(table(classifications))[table(classifications) <= 30] 
-#only the platelet class has < 30 cells
-
-#identify which cells to remove, and get their positions in the bpcells dataset
-cells_to_remove = which(classifications %in% classes_to_remove)
+#only the platelet class has < 30 cells# identify which cells to remove, and get their positions in the bpcells dataset
+cells_to_remove <- which(classifications %in% classes_to_remove)
+cells_to_remove <- c(cells_to_remove, which(is.na(classifications))) # remove cells with no classification
 
 ge_bpcells = ge_bpcells[,-cells_to_remove]
 #make sure to also remove the corresponding classifications of the cells we just
 #removed from the classifications vector!
 metadata = metadata[-cells_to_remove,]
-metadata$seurat_annotations = droplevels(classifications)
+metadata$seurat_annotations = droplevels(metadata$seurat_annotations)
 
 #b. Make an 80/20 train/test split, where we assign a variable to a matrix containing
 #the cells we'll use for our reference (train set) and the cells we'll use for 
@@ -128,21 +133,21 @@ test_ge_bpcells = metadata[test_ids,]
 
 Now that we have a reference dataset (train_ge_pbcells) and a vector of
 classifications for each cell in the reference (train_classifications),
-we can begin finding marker genes that separate our cell classes! We'll
-then use these marker genes later on to create models that can classify
-cells to a cell type.
+we're almost ready to begin finding marker genes that separate our cell
+classes! We'll then use these marker genes later on to create models
+that can classify cells to specific cell types, starting .
 
-Well, actually there's one thing we need to do that, which is create a
-tree that describes the hierarchy of our cell classifications. A tree
-describes the structure of the data (see the Creating Custom Trees page
-for more info), and is one of the unique aspects of this package - the
-ability to create a structure to embed info on plausible
-classifications, and to use that info to make better classifications.
-For this basic tutorial, we'll just assume there's no hierarchical
-structure, and that celltypes are equally likely to be assigned to any
-of the possible classes (an equal tree). I've created a helper function,
-CreateEqualTree, to do this, which just takes in a vector of possible
-cell classes, and creates an equal tree for you.
+There's one more thing we need to do before finding marker genes, and
+that is to create a tree that describes the hierarchy of our cell
+classifications. A tree describes the structure of the data (see the
+Creating Custom Trees page for more info), and is one of the unique
+aspects of this package - the ability to create a structure to embed
+info on plausible classifications, and to use that info to make better
+classifications. For this basic tutorial, we'll just assume there's no
+hierarchical structure, and that celltypes are equally likely to be
+assigned to any of the possible classes (aka an equal tree). I've
+created a helper function, CreateEqualTree, to do this, which just takes
+in a vector of possible cell classes, and creates an equal tree for you.
 
 You'll need to install the treeio package from Bioconductor to get this
 to work. Check it out [here for install
@@ -151,7 +156,7 @@ info](https://bioconductor.org/packages/release/bioc/html/treeio.html):
 ```{r}
 possible_cell_classes = train_metadata$seurat_annotations %>% unique()
 equal_tree = CreateEqualTree(cell_labels = possible_cell_classes)
-#OPTIONAL: let's visualize the tree we created (have to install ggtree on bioconductor to do this)
+#OPTIONAL: let's visualize the tree we created (have to install the ggtree package on bioconductor to do this)
 #ggtree(equal_tree) +geom_nodelab(geom = "label", node = "all") 
 ```
 
@@ -181,13 +186,15 @@ particular pair of celltypes.
 marker_genes = FindMarkerGenes(ref_bpcells = train_ge_bpcells, ref_metadata = train_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
 ```
 
-If it works, we should get a bunch of nonsense messages printed to the
-output talking about writing temporary files on your computer. Under the
-hood, the file is subsetting the GE matrix to contain 500 cells from two
-cell classes, writing that data to a temporary file on your computer,
-and then using that dataset to find marker genes that distinguish the
-classes. It does this for each of the possible pairs of cell classes you
-could create.
+If it works, we should get a bunch of nonsense printed to the output
+talking about writing temporary files on your computer. There's also a
+few automated tests that check whether everything is formatted properly,
+and they'll throw error messages with some info on what's going wrong if
+something is caught. Under the hood, the file is subsetting the GE
+matrix to contain 500 cells from two cell classes, writing that data to
+a temporary file on your computer, and then using that dataset to find
+marker genes that distinguish the classes. It does this for each of the
+possible pairs of cell classes you could create.
 
 We'll also get all the marker genes that distinguish each pair of cell
 classes! Let's take a look at the output, stored in the marker_genes
@@ -200,9 +207,65 @@ View(marker_genes)
 ```
 
 Since Lionmap works on a hierarchy, we have a rootnode (the common node
-from which all cell types descend). That's what the list is named for.
-And at each level of the list, we have a sublist with marker genes that
-distinguish two cell classes (ex: MemoryCD4T vs B). We see this for all
-the matchups.
+from which all cell types descend). That's what the list at the highest
+level is named for. And at each subsequent level, we have a sublist with
+marker genes that distinguish two cell classes (ex: MemoryCD4T vs B). We
+see this for all the matchups.
 
 Now we can use this set of marker genes to create our list of models!
+
+Let's use the **GetModels** function to do this.
+
+Just like before, we'll need to input the following info, just with the
+addition of the marker gene list we just created:
+
+1.  The marker gene list (**marker_genes**)
+
+2.  Our reference GE dataset in BPCells format (**ref_bpcells**)
+
+3.  Our dataframe containing info on each cell (**ref_metadata**)
+
+4.  The tree we created (**tree**)
+
+5.  The name of the column in the metadata giving the cell type
+    (**metadata_cluster_column**)
+
+6.  The name of the column in the metadata giving the cell ID
+    (**metadata_cell_label_column**)
+
+And for this function we can optionally change the **n_cells_sampled**
+parameter, which is the number of cells sampled from each celltype to
+create models that separate each pairwise class (default set to 500),
+the **models_to_include** parameter which lets us change the models
+we're creating (should only be used by more advanced users), and the
+**npcs** parameter, which changes the number of principal components
+used when creating models.
+
+```{r}
+models <- GetModels(marker_genes = marker_genes, ref_bpcells = train_ge_bpcells, ref_metadata = train_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
+
+```
+
+If everything goes well, the output will indicate the tests checking
+proper formatting passed, and will then list the models as they are
+being created.
+
+Let's have a look at the output.
+
+```{r}
+View(models)
+```
+
+The structure of this object, just like the marker genes, is a list of
+lists. Each sublist provides models that can be used to classify a cell
+between one of two classes, and we have models that differentiate all
+possible classes at each level of the celltype hierarchy (equal_tree).
+It also contains information on how to transform data we want to
+classify to be in the same PC-space as the models we just created (if
+that didn't mean anything to you, don't worry, it's just something about
+properly formatting the data). We'll use all these models in the next
+step, to classify cells to specific celltypes.
+
+```{r}
+query_classifications = Classify(bpcells_query = test_)
+```

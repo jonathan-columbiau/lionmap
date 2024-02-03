@@ -26,6 +26,7 @@ Imports:
     ranger,
     Seurat,
     SeuratObject,
+    SeuratData,
     stats,
     stringr,
     testthat,

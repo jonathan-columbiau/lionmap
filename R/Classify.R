@@ -17,16 +17,16 @@
 Classify <- function(bpcells_query, models, tree_struc, prop_max_threshold = .66) {
   # initial rootnode level - do all at once. All tree_struc have rootnodes, even if all clusters are at one level
   rootnode <- tree_struc %>%
-    rootnode() %>%
-    nodelab(tree_struc, .)
-  tipnodes <- nodelab(tree_struc, offspring(tree_struc, rootnode, type = "tips"))
+    tidytree::rootnode() %>%
+    tidytree::nodelab(tree_struc, .)
+  tipnodes <- tidytree::nodelab(tree_struc, tidytree::offspring(tree_struc, rootnode, type = "tips"))
   # Normalize by reads-per-cell
-  bpcells_query <- multiply_cols(bpcells_query, 1 / Matrix::colSums(bpcells_query))
+  bpcells_query <- BPCells::multiply_cols(bpcells_query, 1 / Matrix::colSums(bpcells_query))
   # Log normalization
   bpcells_query <- log1p(bpcells_query * 10000) # Log normalization
   # get internal nodes in hierarchical order
-  internal_nodes <- c(rootnode, offspring(tree_struc, rootnode) %>% nodelab(tree_struc, .) %>% .[-which(. %in% nodelab(tree_struc, offspring(tree_struc, rootnode, type = "tips")))])
-  internal_node_assignment <- vector(mode = "list", length = length(internal_nodes)) %>% set_names(internal_nodes)
+  internal_nodes <- c(rootnode, tidytree::offspring(tree_struc, rootnode) %>% tidytree::nodelab(tree_struc, .) %>% .[-which(. %in% tidytree::nodelab(tree_struc, tidytree::offspring(tree_struc, rootnode, type = "tips")))])
+  internal_node_assignment <- vector(mode = "list", length = length(internal_nodes)) %>% purrr::set_names(internal_nodes)
   query_cells <- bpcells_query
   internal_node_assignment[[rootnode]] <- colnames(query_cells)
   final_classifications <- vector(mode = "character")
@@ -43,8 +43,8 @@ Classify <- function(bpcells_query, models, tree_struc, prop_max_threshold = .66
       first_lev_markers <- models[[node]][[i]]$pc_loadings %>% colnames()
       first_lev_bpcells <- query_cells[first_lev_markers, cells] %>% t() # select markers and cells of this internal node level
       first_lev_bpcells <- first_lev_bpcells %>%
-        add_cols(-first_lev_avg_counts) %>%
-        multiply_cols(1 / first_lev_std_counts)
+        BPCells::add_cols(-first_lev_avg_counts) %>%
+        BPCells::multiply_cols(1 / first_lev_std_counts)
       first_lev_pc_loadings <- models[[node]][[i]]$pc_loadings[, first_lev_markers] %>% t()
       # transform data using matrix multiplication operator %*%
       first_lev_bpcells <- first_lev_bpcells %*% first_lev_pc_loadings
@@ -57,7 +57,7 @@ Classify <- function(bpcells_query, models, tree_struc, prop_max_threshold = .66
         t()
     }
 
-    count_threshold <- (child(tree_struc,node) %>% length() - 1) * length(models[[1]][[1]][["Models"]]) * prop_max_threshold #2/3 of max score (num matchups for each class - 1)*num models per pairwise comparison
+    count_threshold <- (tidytree::child(tree_struc,node) %>% length() - 1) * length(models[[1]][[1]][["Models"]]) * prop_max_threshold #2/3 of max score (num matchups for each class - 1)*num models per pairwise comparison
 
     obs_above_threshold <- res_list %>%
       plyr::rbind.fill.matrix(res_list) %>%
@@ -68,16 +68,16 @@ Classify <- function(bpcells_query, models, tree_struc, prop_max_threshold = .66
       dplyr::group_by(obs) %>%
       dplyr::filter(count == max(count))
     #filter obs with mult max classes
-    tied_obs <- obs_above_threshold %>% group_by(obs) %>% summarise(n = n()) %>% filter(n > 1) %>% pull(obs)
+    tied_obs <- obs_above_threshold %>% dplyr::group_by(obs) %>% dplyr::summarise(n = n()) %>% dplyr::filter(n > 1) %>% dplyr::pull(obs)
     obs_above_threshold <- obs_above_threshold %>%
       dplyr::filter(!obs %in% tied_obs) %>%
       dplyr::filter(count >= count_threshold) %>%
-      pull(class, name = obs)
+      dplyr::pull(class, name = obs)
     ## assign "tip" cells to final classification
     tip_cells <- obs_above_threshold[obs_above_threshold %in% tipnodes]
     final_classifications <- final_classifications %>% append(tip_cells)
     ## assign "stuck" cells to final classification - ties/not threshold
-    stuck_cells <- rownames(first_lev_bpcells)[!rownames(first_lev_bpcells) %in% names(final_classifications) & !rownames(first_lev_bpcells) %in% names(obs_above_threshold)] %>% set_names(., .)
+    stuck_cells <- rownames(first_lev_bpcells)[!rownames(first_lev_bpcells) %in% names(final_classifications) & !rownames(first_lev_bpcells) %in% names(obs_above_threshold)] %>% purrr::set_names(., .)
     stuck_cells <- rep(node, length(stuck_cells))
     names(stuck_cells) <- rownames(first_lev_bpcells)[!rownames(first_lev_bpcells) %in% names(final_classifications) & !rownames(first_lev_bpcells) %in% names(obs_above_threshold)]
     final_classifications <- final_classifications %>% append(stuck_cells)
@@ -86,16 +86,16 @@ Classify <- function(bpcells_query, models, tree_struc, prop_max_threshold = .66
       obs_above_threshold <- obs_above_threshold[obs_above_threshold %in% internal_nodes]
       obs_above_threshold <- split(obs_above_threshold, obs_above_threshold)
       # unit test 1: all remaining cells assigned to internal nodes
-      test_that("all remaining cells assigned to internal nodes", {
-        expect_contains(internal_nodes, names(obs_above_threshold))
+      testthat::test_that("all remaining cells assigned to internal nodes", {
+        testthat::expect_contains(internal_nodes, names(obs_above_threshold))
       })
       for (name in names(obs_above_threshold)) {
         internal_node_assignment[[name]] <- obs_above_threshold[[name]] %>% names()
       }
     }
   }
-  test_that("expected number of elements returned", {
-    expect_equal(length(final_classifications), ncol(bpcells_query))
+  testthat::test_that("expected number of elements returned", {
+    testthat::expect_equal(length(final_classifications), ncol(bpcells_query))
   })
   #order match bpcells_query
   final_classifications[match(colnames(bpcells_query),names(final_classifications))]

@@ -36,6 +36,11 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
     testthat::expect_true(metadata_cell_label_column %in% colnames(ref_metadata))
   })
 
+  testthat::test_that("None of the cell types have any spaces in their names (one of the requirements of using Lionmap) ", {
+    # Assuming ref_metadata is defined in your environment
+    testthat::expect_true(all(!grepl(" ",unique(ref_metadata[,metadata_cell_label_column]))))
+  })
+
 
 
   #Unit test 1: ref_bpcells is a bpcells object - else throw error
@@ -46,8 +51,7 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
   # Normalize by reads-per-cell
   ref_bpcells <- BPCells::multiply_cols(ref_bpcells, 1/Matrix::colSums(ref_bpcells))
   # Log normalization
-  ref_bpcells <- BPCells::log1p(ref_bpcells * 10000) # Log normalization
-  #save to disk to make it quick
+  ref_bpcells <-log1p(ref_bpcells * 10000) # Log normalization
   marker_genes <- vector(mode = "list")
   internal_nodes <- tree@phylo$node.label
   direct_child_nodes <- vector(mode = "list", length = length(internal_nodes))
@@ -116,8 +120,8 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
       subset_atlas <-ref_bpcells[, c(cells_node_1, cells_node_2)]
       celltype_labels <- c(rep(node1, length(cells_node_1)), rep(node2, length(cells_node_2))) %>% as.factor()
       pairwise_markers <- BPCells::marker_features(subset_atlas, celltype_labels, method = "wilcoxon")
-      #remove genes with less than 1 logCPM in either
-      pairwise_markers %<>% dplyr::filter(foreground_mean > 1 |background_mean > 1) %>% dplyr::select(-background) %>% dplyr::distinct(feature, .keep_all = TRUE) %>% dplyr::mutate(log2_fc = log2(foreground_mean/background_mean))
+      #remove genes with less than .5 logCPM in either class
+      pairwise_markers %<>% dplyr::filter(foreground_mean > .5 |background_mean > .5) %>% dplyr::select(-background) %>% dplyr::distinct(feature, .keep_all = TRUE) %>% dplyr::mutate(log2_fc = log2(foreground_mean/background_mean))
 
       #get log2fc, and select the top marker genes with the highest abs value log2fc
       pairwise_markers %<>% dplyr::mutate(abs_log2_fc = log2(foreground_mean/background_mean) %>% abs()) %>% dplyr::arrange(abs_log2_fc) %>% dplyr::slice_max(abs_log2_fc, n = n_genes) %>% dplyr::pull(feature)
