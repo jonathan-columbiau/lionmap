@@ -199,12 +199,10 @@ possible pairs of cell classes you could create.
 
 We'll also get all the marker genes that distinguish each pair of cell
 classes! Let's take a look at the output, stored in the marker_genes
-variable. Write the following to explore the output (if you're using
-RStudio) and then read on ahead for more info.
+variable. Write the following to explore the output and then read on ahead for more info.
 
 ```{r}
-View(marker_genes)
-
+head(str(marker_genes), max.level = 2)
 ```
 
 Since Lionmap works on a hierarchy, we have a rootnode (the common node
@@ -251,10 +249,10 @@ If everything goes well, the output will indicate the tests checking
 proper formatting passed, and will then list the models as they are
 being created.
 
-Let's have a look at the output.
+Let's have a look at the structure of the list with the str function (if you're using Rstudio)
 
 ```{r}
-View(models)
+str(models, max.level = 2)
 ```
 
 The structure of this object, just like the marker genes, is a list of
