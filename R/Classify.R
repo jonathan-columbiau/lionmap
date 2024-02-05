@@ -53,7 +53,7 @@ Classify <- function(bpcells_query, models, tree_struc, prop_max_threshold = .66
       first_lev_models <- models[[node]][[i]]$Models
       res_list[[i]] <- purrr::map2(first_lev_models, first_lev_models %>% names(), predict_models, nonsparse_mat) %>%
         as.data.frame() %>%
-        set_colnames(paste0(colnames(.), "_", i)) %>%
+        magrittr::set_colnames(paste0(colnames(.), "_", i)) %>%
         t()
     }
 
