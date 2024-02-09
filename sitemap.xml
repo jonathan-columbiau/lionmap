@@ -10,6 +10,12 @@
     <loc>https://jonathan-columbiau.github.io/lionmap/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://jonathan-columbiau.github.io/lionmap/articles/Basic-Tutorial.html</loc>
+  </url>
+  <url>
+    <loc>https://jonathan-columbiau.github.io/lionmap/articles/index.html</loc>
+  </url>
+  <url>
     <loc>https://jonathan-columbiau.github.io/lionmap/authors.html</loc>
   </url>
   <url>
@@ -67,6 +73,9 @@
     <loc>https://jonathan-columbiau.github.io/lionmap/reference/linear_svm.html</loc>
   </url>
   <url>
+    <loc>https://jonathan-columbiau.github.io/lionmap/reference/lionmap-package.html</loc>
+  </url>
+  <url>
     <loc>https://jonathan-columbiau.github.io/lionmap/reference/naive_bayes.html</loc>
   </url>
   <url>
@@ -83,5 +92,17 @@
   </url>
   <url>
     <loc>https://jonathan-columbiau.github.io/lionmap/reference/random_forest.html</loc>
+  </url>
+  <url>
+    <loc>https://jonathan-columbiau.github.io/lionmap/reference/test_ex_data_bpcells.html</loc>
+  </url>
+  <url>
+    <loc>https://jonathan-columbiau.github.io/lionmap/reference/test_ex_metadata.html</loc>
+  </url>
+  <url>
+    <loc>https://jonathan-columbiau.github.io/lionmap/reference/train_ex_data_bpcells.html</loc>
+  </url>
+  <url>
+    <loc>https://jonathan-columbiau.github.io/lionmap/reference/train_ex_metadata.html</loc>
   </url>
 </urlset>

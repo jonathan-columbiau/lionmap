@@ -33,6 +33,12 @@ marker_features, which finds genes using the Wilcoxon test."><!-- mathjax --><sc
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/Basic-Tutorial.html">Basic-Tutorial</a>
+  </div>
+</li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -120,7 +126,16 @@ level of the hierarchy in the tree you provided.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">FindMarkerGenes</span><span class="op">(</span><span class="va">ref_bpcells</span>, <span class="va">ref_metadata</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in test_that("ref_metadata is a dataframe (not a tibble)", {    expect_true(is.data.frame(ref_metadata) &amp; !is.tbl(ref_metadata))}):</span> could not find function "test_that"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ── <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">: ref_metadata is a dataframe (not a tibble)</span> ───────────────────────────</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Error in `eval(expr, envir, enclos)`: object 'ref_metadata' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Backtrace:</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">    </span>▆</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 1. </span>├─<span style="font-weight: bold;">testthat</span>::expect_true(is.data.frame(ref_metadata) &amp; !dplyr::is.tbl(ref_metadata))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 2. </span>│ └─testthat::quasi_label(enquo(object), label, arg = "object")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 3. </span>│   └─<span style="font-weight: bold;">rlang</span>::eval_bare(expr, quo_get_env(quo))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 4. </span>└─<span style="font-weight: bold;">base</span>::is.data.frame(ref_metadata)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> Test failed</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

@@ -40,6 +40,12 @@
 <li class="nav-item">
   <a class="nav-link" href="reference/index.html">Reference</a>
 </li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="articles/Basic-Tutorial.html">Basic-Tutorial</a>
+  </div>
+</li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="search.json" id="search-input" placeholder="Search for" autocomplete="off">
@@ -60,14 +66,15 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><p>Hello! Welcome to the Lionmap package, we’re so excited to have you here!</p>
-<p>This package is meant to enable easy, consistent and robust cell type mapping using a reference dataset.</p>
-<p>The package only works using BPCells matrices as input. BPCells is a package that enables fast gene expression transformations and IO operations while requiring little memory on your computing environment. For more info on BPCells, check out the package <a href="https://bnprks.github.io/BPCells/" class="external-link">here</a>.</p>
-<p>Easy install:</p>
+<p>This package is meant to enable easy, consistent and robust cell type mapping using a reference dataset. Optional features include using a custom hierarchy that describes the relationship between cell types, and setting different confidence thresholds for individual mappings.</p>
+<p>There are a few different packages you have to install to use this package that are not hosted on the CRAN package directory. For most users, that will mean you have to manually install them (click the links below for instructions to install the following packages). You should also install the remotes library to install this package from Github.</p>
+<p>Steps to have a successful install:</p>
 <ol style="list-style-type: decimal">
-<li><p>install the remotes library</p></li>
-<li><p>enter: remotes::install_github(“jonathan-columbiau/lionmap”)</p></li>
+<li><p>Install the BPCells package (for more information <a href="https://bnprks.github.io/BPCells/" class="external-link">see here</a>)</p></li>
+<li><p>Install the <a href="https://bioconductor.org/packages/release/bioc/html/treeio.html" class="external-link">treeio package</a></p></li>
+<li><p>Install the Lionmap package: remotes::install_github(“jonathan-columbiau/lionmap”)</p></li>
 </ol>
-<p>If that doesn’t work, there are some packages you have to manually install in order to get Lionmap to work properly. All of them are available as repositories either on Github, Bioconductor, or CRAN . Look at the error message you’re getting for the names of the package you have to install manually.</p>
+<p>The package only works using BPCells matrices as input. BPCells is a package that enables fast gene expression transformations and IO operations while requiring little memory on your computing environment. For more info on BPCells, check out the package <a href="https://bnprks.github.io/BPCells/" class="external-link">here</a>.</p>
 
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>

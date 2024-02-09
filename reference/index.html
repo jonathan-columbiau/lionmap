@@ -21,6 +21,12 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/Basic-Tutorial.html">Basic-Tutorial</a>
+  </div>
+</li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -55,7 +61,8 @@
           
           <code><a href="AlignBPCellsObjs.html">AlignBPCellsObjs()</a></code> 
         </dt>
-        <dd>Align BPCells Objects so they both have the same genes.</dd>
+        <dd>Align BPCells Objects so they both have the same genes (useful for getting reference and
+query datasets in the proper format before finding marker genes).</dd>
       </dl><dl><dt>
           
           <code><a href="Classify.html">Classify()</a></code> 
@@ -81,6 +88,26 @@ marker_features, which finds genes using the Wilcoxon test.</dd>
           <code><a href="GetModels.html">GetModels()</a></code> 
         </dt>
         <dd>Function that gives models trained to differentiate all pairwise matchups.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="test_ex_data_bpcells.html">test_ex_data_bpcells</a></code> 
+        </dt>
+        <dd>PBMC 3k dataset subset</dd>
+      </dl><dl><dt>
+          
+          <code><a href="test_ex_metadata.html">test_ex_metadata</a></code> 
+        </dt>
+        <dd>PBMC 3k dataset testing metadata</dd>
+      </dl><dl><dt>
+          
+          <code><a href="train_ex_data_bpcells.html">train_ex_data_bpcells</a></code> 
+        </dt>
+        <dd>PBMC 3k dataset subset</dd>
+      </dl><dl><dt>
+          
+          <code><a href="train_ex_metadata.html">train_ex_metadata</a></code> 
+        </dt>
+        <dd>PBMC 3k dataset training metadata</dd>
       </dl></div>
   </main></div>
 
