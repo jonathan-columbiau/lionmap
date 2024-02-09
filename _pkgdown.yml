@@ -1,5 +1,7 @@
 url: https://jonathan-columbiau.github.io/lionmap/
 template:
   bootstrap: 5
-  bootswatch: Morph
+  bootswatch: morph
+  bslib:
+    pkgdown-nav-height: 100px
 
