@@ -17,10 +17,21 @@ knitr::opts_chunk$set(
 )
 ```
 
-Need to install the SeuratData package for the vignette/tutorial. We're
+Need to install the SeuratData package for the vignette/tutorial, alongside other dependencies. We're
 using it just because it has accessible datasets with classifications
 (stored in the Seurat metadata field!). Let us know if you have any
 issues accessing the data needed for this tutorial.
+
+```{r}
+install.packages("seurat")
+install.packages("devtools")
+install.packages("magrittr")
+install.packages("caret")
+devtools::install_github("satijalab/seurat-data")
+devtools::install_github("mojaveazure/seurat-disk")
+devtools::install_github("bnprks/BPCells")
+```
+
 
 ```{r}
 library(lionmap)
