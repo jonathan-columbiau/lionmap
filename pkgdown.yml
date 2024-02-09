@@ -3,7 +3,7 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   Basic-Tutorial: Basic-Tutorial.html
-last_built: 2024-02-09T21:44Z
+last_built: 2024-02-09T21:50Z
 urls:
   reference: https://jonathan-columbiau.github.io/lionmap/reference
   article: https://jonathan-columbiau.github.io/lionmap/articles
