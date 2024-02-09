@@ -4,6 +4,8 @@ This package is meant to enable easy, consistent and robust cell type mapping us
 
 There are a few different packages you have to install to use this package that are not hosted on the CRAN package directory. For most users, that will mean you have to manually install them (click the links below for instructions to install the following packages). You should also install the remotes library to install this package from Github.
 
+Steps to have a successful install:
+
 1)  Install the BPCells package (for more information [see here](https://bnprks.github.io/BPCells/))
 
 2)  Install the [treeio package](https://bioconductor.org/packages/release/bioc/html/treeio.html)

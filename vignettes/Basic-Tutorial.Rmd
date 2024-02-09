@@ -24,8 +24,13 @@ issues accessing the data needed for this tutorial.
 
 ```{r}
 library(lionmap)
-InstallData("pbmc3k")
-UpdateSeuratObject(pbmc3k) #just Seurat updating things to get it to work
+library(SeuratData)
+library(Seurat)
+library(BPCells)
+library(magrittr)
+library(caret)
+SeuratData::InstallData("pbmc3k")
+SeuratObject::UpdateSeuratObject(pbmc3k) #just Seurat updating things to get it to work
 ```
 
 1.  Get gene expression data in a BPCells matrix and cell type

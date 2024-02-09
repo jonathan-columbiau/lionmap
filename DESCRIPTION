@@ -26,7 +26,6 @@ Depends:
     ranger,
     Seurat,
     SeuratObject,
-    SeuratData,
     stats,
     stringr,
     testthat,
@@ -34,7 +33,8 @@ Depends:
     tidyr,
     R (>= 2.10)
 Remotes: 
-    bnprks/BPCells
+    bnprks/BPCells,
+    satijalab/seurat-data
 URL: https://github.com/jonathan-columbiau/lionmap, https://jonathan-columbiau.github.io/lionmap/
 BugReports: https://github.com/jonathan-columbiau/lionmap/issues
 Suggests: 
