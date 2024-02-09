@@ -32,12 +32,14 @@ Depends:
     testthat,
     treeio,
     tidyr,
-    tidytree
+    R (>= 2.10)
 Remotes: 
     bnprks/BPCells
 URL: https://github.com/jonathan-columbiau/lionmap, https://jonathan-columbiau.github.io/lionmap/
 BugReports: https://github.com/jonathan-columbiau/lionmap/issues
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    tidytree
 VignetteBuilder: knitr
+LazyData: true

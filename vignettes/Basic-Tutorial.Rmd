@@ -104,7 +104,6 @@ cells_to_remove <- c(cells_to_remove, which(is.na(classifications))) # remove ce
 
 ge_bpcells = ge_bpcells[,-cells_to_remove]
 #make sure to also remove the corresponding classifications of the cells we just
-#removed from the classifications vector!
 metadata = metadata[-cells_to_remove,]
 metadata$seurat_annotations = droplevels(metadata$seurat_annotations)
 
@@ -136,7 +135,13 @@ Now that we have a reference dataset (train_ge_pbcells) and a vector of
 classifications for each cell in the reference (train_classifications),
 we're almost ready to begin finding marker genes that separate our cell
 classes! We'll then use these marker genes later on to create models
-that can classify cells to specific cell types, starting .
+that can classify cells to specific cell types.
+
+As a way to conveniently access these example datasets without needing to use Seurat to
+manually get the pbmc3k dataset, the train ge, test ge, + associated metadata are
+automatically installed in the package as train_ex_data_bpcells, test_ex_data_bpcells,
+train_ex_metadata, test_ex_metadata. You can get these datasets by typing 
+data(name of file), ex: data(train_ex_metadata).
 
 There's one more thing we need to do before finding marker genes, and
 that is to create a tree that describes the hierarchy of our cell

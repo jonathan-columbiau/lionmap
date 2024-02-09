@@ -8,7 +8,8 @@
 #' @export
 #'
 #' @examples
-#' bpcells_obj1 = AlignBPCellsObjs(bpcells_obj1, bpcells_obj2)
+#'
+#' train_ex_data_bpc = AlignBPCellsObjs(bpcells_obj1, bpcells_obj2)
 #' bpcells_obj2 = AlignBPCellsObjs(bpcells_obj2, bpcells_obj1)
 AlignBPCellsObjs <- function(bpcells_obj1, bpcells_obj2) {
   #only keep genes with at least 1 cell expressed and found in both datasets
