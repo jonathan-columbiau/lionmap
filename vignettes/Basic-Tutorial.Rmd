@@ -24,11 +24,6 @@ issues accessing the data needed for this tutorial.
 
 ```{r}
 library(lionmap)
-library(SeuratData)
-library(Seurat)
-library(BPCells)
-library(magrittr)
-library(caret)
 InstallData("pbmc3k")
 UpdateSeuratObject(pbmc3k) #just Seurat updating things to get it to work
 ```
