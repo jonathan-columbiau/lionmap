@@ -1,3 +1,7 @@
+
+
+
+
 Hello! Welcome to the Lionmap package, we're so excited to have you here!
 
 This package is meant to enable easy, consistent and robust cell type mapping using a reference dataset. Optional features include using a custom hierarchy that describes the relationship between cell types, and setting different confidence thresholds for individual mappings.
