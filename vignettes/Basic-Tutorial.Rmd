@@ -13,7 +13,8 @@ editor_options:
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
@@ -23,13 +24,7 @@ using it just because it has accessible datasets with classifications
 issues accessing the data needed for this tutorial.
 
 ```{r}
-install.packages("seurat")
-install.packages("devtools")
-install.packages("magrittr")
-install.packages("caret")
-devtools::install_github("satijalab/seurat-data")
-devtools::install_github("mojaveazure/seurat-disk")
-devtools::install_github("bnprks/BPCells")
+devtools::install_github("jonathan-columbiau/lionmap")
 ```
 
 
