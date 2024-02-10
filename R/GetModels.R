@@ -73,7 +73,7 @@ GetModels <- function(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cl
       gene_level_stats <- BPCells::matrix_stats(subset_dataset, col_stats = "variance", threads = n_threads)$col_stats
       avg_log_exp <-  gene_level_stats["mean",]
       #get stdev of each gene
-      stdev <- gene_level_stats["variance",] %>% sqrt()
+      stdev <- sqrt(gene_level_stats["variance",])
       #z-score dataset
       subset_dataset <- subset_dataset %>% BPCells::add_cols(-avg_log_exp) %>% BPCells::multiply_cols(1/stdev)
       #sample n_cells_sampled # of cells from each node

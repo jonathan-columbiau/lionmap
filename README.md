@@ -1,19 +1,21 @@
+Hello! Welcome to the Lionmap package :)
 
+This package is meant to provide efficient and robust cell type classification while being easy to use.
 
+Optional features that might increase mapping accuracy include using a custom hierarchy that describes the relationship between cell types, and setting different confidence thresholds for a classification to proceed to the next level of the hierarchy.
 
+An example using a sample dataset where we run the entire pipeline (finding marker genes, creating models, and classifying cells) in a few lines of code is shown below.
 
-Hello! Welcome to the Lionmap package, we're so excited to have you here!
+```{r, eval=FALSE}
+#load reference and query datasets
+data("hierarchy","train_ex_data_bpcells","test_ex_data_bpcells","train_ex_metadata")
+#find marker genes 
+marker_genes = FindMarkerGenes(train_ex_data_bpcells, train_ex_metadata, tree = hierarchy, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
+#create models
+models = GetModels(marker_genes, train_ex_data_bpcells, train_ex_metadata, tree = hierarchy, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
+#classify cells using models
+classifications = Classify(test_ex_data_bpcells, models, hierarchy)
 
-This package is meant to enable easy, consistent and robust cell type mapping using a reference dataset. Optional features include using a custom hierarchy that describes the relationship between cell types, and setting different confidence thresholds for individual mappings.
+```
 
-There are a few different packages you have to install to use this package that are not hosted on the CRAN package directory. For most users, that will mean you have to manually install them (click the links below for instructions to install the following packages). You should also install the remotes library to install this package from Github.
-
-Steps to have a successful install:
-
-1)  Install the BPCells package (for more information [see here](https://bnprks.github.io/BPCells/))
-
-2)  Install the [treeio package](https://bioconductor.org/packages/release/bioc/html/treeio.html)
-
-3)  Install the Lionmap package: remotes::install_github("jonathan-columbiau/lionmap")
-
-The package only works using BPCells matrices as input. BPCells is a package that enables fast gene expression transformations and IO operations while requiring little memory on your computing environment. For more info on BPCells, check out the package [here](https://bnprks.github.io/BPCells/).
+The package only works using BPCells matrices as gene expression input. BPCells is a package that enables fast gene expression transformations and IO operations while requiring little memory on your computing environment. For more info on BPCells, check out the package [here](https://bnprks.github.io/BPCells/).

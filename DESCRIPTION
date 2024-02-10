@@ -13,7 +13,6 @@ RoxygenNote: 7.3.0
 biocViews:
 Depends: 
     plyr,
-    purrr,
     caret,
     data.tree,
     dplyr,
