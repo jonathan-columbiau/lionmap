@@ -47,9 +47,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="core-package-functions">Core Package Functions<a class="anchor" aria-label="anchor" href="#core-package-functions"></a></h2>
       
-      
+      <p class="section-desc"></p><p>Identifying marker genes, creating models, and classifying cells to a reference dataset.</p>
 
       
     </div><div id="" class="section level2">
@@ -58,24 +58,6 @@
       
 
       <dl><dt>
-          
-          <code><a href="AlignBPCellsObjs.html">AlignBPCellsObjs()</a></code> 
-        </dt>
-        <dd>Align BPCells Objects so they both have the same genes (useful for getting reference and
-query datasets in the proper format before finding marker genes).</dd>
-      </dl><dl><dt>
-          
-          <code><a href="Classify.html">Classify()</a></code> 
-        </dt>
-        <dd>Classification function that takes in input dataset (in BPCells format), alongside
-created models and the tree structure and provides a vector of classifications.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="CreateEqualTree.html">CreateEqualTree()</a></code> 
-        </dt>
-        <dd>This function is meant for users who don't want to use the tree-based/hierarchical functionality of the package.
-It creates a tree that assumes that all the celltype labels are at the same level of the tree.</dd>
-      </dl><dl><dt>
           
           <code><a href="FindMarkerGenes.html">FindMarkerGenes()</a></code> 
         </dt>
@@ -89,6 +71,63 @@ marker_features, which finds genes using the Wilcoxon test.</dd>
         </dt>
         <dd>Function that gives models trained to differentiate all pairwise matchups.</dd>
       </dl><dl><dt>
+          
+          <code><a href="Classify.html">Classify()</a></code> 
+        </dt>
+        <dd>Classification function that takes in input dataset (in BPCells format), alongside
+created models and the tree structure and provides a vector of classifications.</dd>
+      </dl></div><div class="section level2">
+      <h2 id="data-formatting">Data Formatting<a class="anchor" aria-label="anchor" href="#data-formatting"></a></h2>
+      
+      <p class="section-desc"></p><p>To help you get input GE data into the correct format.</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="AlignBPCellsObjs.html">AlignBPCellsObjs()</a></code> 
+        </dt>
+        <dd>Align BPCells Objects so they both have the same genes (useful for getting reference and
+query datasets in the proper format before finding marker genes).</dd>
+      </dl></div><div class="section level2">
+      <h2 id="hierarchy-creation">Hierarchy Creation<a class="anchor" aria-label="anchor" href="#hierarchy-creation"></a></h2>
+      
+      <p class="section-desc"></p><p>To build a custom hierarchy.</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="CreateHierarchy.html">CreateHierarchy()</a></code> 
+        </dt>
+        <dd>Create Hierarchical Tree Structure from CSV with parent and child nodes
+named in a csv file</dd>
+      </dl><dl><dt>
+          
+          <code><a href="CreateEqualTree.html">CreateEqualTree()</a></code> 
+        </dt>
+        <dd>This function is meant for users who don't want to use the tree-based/hierarchical functionality of the package.
+It creates a tree that assumes that all the celltype labels are at the same level of the tree.</dd>
+      </dl></div><div class="section level2">
+      <h2 id="example-datasets">Example Datasets<a class="anchor" aria-label="anchor" href="#example-datasets"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="test_ex_data_bpcells.html">test_ex_data_bpcells</a></code> 
         </dt>
@@ -109,7 +148,8 @@ marker_features, which finds genes using the Wilcoxon test.</dd>
         </dt>
         <dd>PBMC 3k dataset training metadata</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
