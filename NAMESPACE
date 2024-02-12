@@ -3,6 +3,7 @@
 export(AlignBPCellsObjs)
 export(Classify)
 export(CreateEqualTree)
+export(CreateHierarchy)
 export(FindMarkerGenes)
 export(GetModels)
 importFrom(magrittr,"%>%")

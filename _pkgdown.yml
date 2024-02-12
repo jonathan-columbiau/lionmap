@@ -1,7 +1,39 @@
 url: https://jonathan-columbiau.github.io/lionmap/
 template:
   bootstrap: 5
-  bootswatch: minty
-  bslib:
-    pkgdown-nav-height: 20px
+  bootswatch: cosmo
+
+reference:
+
+- title: Core Package Functions
+  desc: >
+    Identifying marker genes, creating models, and classifying cells
+    to a reference dataset.
+  contents:
+  - FindMarkerGenes
+  - GetModels
+  - Classify
+
+- title: Data Formatting
+  desc: >
+    To help you get input GE data into the correct
+    format.
+  contents:
+  - AlignBPCellsObjs
+
+- title: Hierarchy Creation
+  desc: >
+    To build a custom hierarchy.
+  contents:
+  - CreateHierarchy
+  - CreateEqualTree
+
+
+- title: Example Datasets
+  contents:
+  - test_ex_data_bpcells
+  - test_ex_metadata
+  - train_ex_data_bpcells
+  - train_ex_metadata
+
 

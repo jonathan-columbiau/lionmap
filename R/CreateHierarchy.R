@@ -9,7 +9,7 @@
 #' @return a treedata object
 #' @export
 #'
-#' @examples
+#' @examples CreateHierarchy("x.csv")
 CreateHierarchy <- function(csv_file_path) {
   # Read the CSV file
   tree_tbl = read.csv(csv_file_path)
