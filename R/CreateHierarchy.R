@@ -23,7 +23,7 @@ CreateHierarchy <- function(csv_file_path) {
   tree_tbl$trait = NA
 
   # Convert the data frame to a tibble
-  tree_tbl <- tree_tbl %>% tibble::as_tibble()
+  tree_tbl <- tree_tbl %>% tibble::as_tibble() %>% dplyr::select(node, parent, branch_length, trait)
 
   # Convert the tibble to a treedata object
   tree_tidy = as.treedata(tree_tbl)
