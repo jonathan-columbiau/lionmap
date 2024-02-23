@@ -61,6 +61,9 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
     direct_child_nodes[[i]] <- child_node_labels
   }
   names(direct_child_nodes) <- internal_nodes
+  #remove internal nodes with only one child node (nothing to compare against)
+  direct_child_nodes <- direct_child_nodes[lapply(direct_child_nodes,length)!=1]
+
 
   child_node_labels <- direct_child_nodes %>% unlist(use.names = F)
   descendant_tip_nodes <- vector(mode = "list", length = length(child_node_labels))
@@ -80,10 +83,9 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
     descendant_tip_nodes <- descendant_tip_nodes[lapply(descendant_tip_nodes,length)>0]
     specified_tip_nodes <- descendant_tip_nodes %>% unlist(use.names = F) %>% unique()
 
-
   }
 
-  for (i in 1:length(internal_nodes)) { #iterate over each parent node
+  for (i in 1:length(direct_child_nodes)) { #iterate over each parent node
     specified_ancestor_node <- names(direct_child_nodes)[i]
     direct_children_of_specified_ancestor_nodes_vector <- direct_child_nodes[[specified_ancestor_node]]
     child_node_round_robin_matchups <- pairwise_combinations(direct_children_of_specified_ancestor_nodes_vector)
@@ -133,7 +135,7 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
   }
 
   #set naming and return list
-  names(marker_genes) <- internal_nodes
+  names(marker_genes) <- names(direct_child_nodes)
   marker_genes
 
 }

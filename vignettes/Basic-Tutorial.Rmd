@@ -295,6 +295,7 @@ in the query dataset.
 
 ```{r}
 query_classifications = Classify(bpcells_query = test_ge_bpcells,models = models,tree_struc = equal_tree)
+
 ```
 
 Awesome! Now we have a vector of classifications, formatted so the name

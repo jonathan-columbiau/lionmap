@@ -3,7 +3,7 @@
 #'
 #' @param bpcells_query Query dataset already aligned to reference dataset used to find marker genes and create models.
 #' @param models Models created through GetMarkerGenes function.
-#' @param tree_struc Tree used in model creation.
+#' @param tree Tree used in model creation.
 #' @param prop_max_threshold Proportion of evidence required for a test
 #'
 #' @return A vector providing classifications of cells in bpcells_query in the same order.
@@ -29,13 +29,36 @@ Classify <- function(bpcells_query, models, tree_struc, prop_max_threshold = .66
   internal_node_assignment <- vector(mode = "list", length = length(internal_nodes)) %>% purrr::set_names(internal_nodes)
   query_cells <- bpcells_query
   internal_node_assignment[[rootnode]] <- colnames(query_cells)
+
+  #add support for trees with redundant internal nodes
+  redundant_internal_nodes = tidytree::child(tree_struc, internal_nodes) %>% lapply(function(x) {length(x) ==1}) %>% unlist() %>% .[. == T] %>% names()
+
   final_classifications <- vector(mode = "character")
   for (j in 1:length(internal_nodes)) { # iterate node
     print(j)
     ## track cells that don't go past internal nodes
     node <- internal_nodes[j]
-    res_list <- vector(mode = "list", length = length(models[[node]]))
+
     cells <- internal_node_assignment[[node]]
+
+    #check if redundant internal node. If so, assign to offspring
+    if (node %in% redundant_internal_nodes) {
+      child_node = tidytree::child(tree_struc, node) %>% nodelab(tree_struc,.)
+      #check if offspring is internal node or tip - since redundant, only has one element
+      #by definition
+      #if internal node assign to that in internal_node_assignment list
+      if(!child_node %in% tipnodes) {
+        internal_node_assignment[[child_node]] <- cells
+      } else {#if tip assign to child in final_classifications vector
+        these_classifications = rep(child_node, length(cells))
+        names(these_classifications) = cells
+        final_classifications <- c(final_classifications, these_classifications)
+      }
+      next
+    }
+
+    res_list <- vector(mode = "list", length = length(models[[node]]))
+
     ## final classification for cells that don't go past internal node = internal node
     for (i in 1:length(models[[node]])) { # iterate over models, classify
       first_lev_avg_counts <- models[[node]][[i]]$avg_log_exp # scale

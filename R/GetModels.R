@@ -46,7 +46,6 @@ GetModels <- function(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cl
   ref_bpcells %<>% BPCells::t()
   for (i in 1:length(marker_genes)) {  #Iterate through parent nodes
     for (j in 1:length(marker_genes[[i]])) { ##2) Iterate through matchups
-      print(paste0("Model: ", as.character(i * length(marker_genes) + j - 1)))
       #3) Subset seurat object to only have cells pertaining to this matchup
       node1 <- marker_genes[[i]][[j]]$compared_nodes[1]
       node2 <- marker_genes[[i]][[j]]$compared_nodes[2]
