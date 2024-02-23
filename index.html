@@ -65,14 +65,36 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9"><p>Hello! Welcome to the Lionmap package :)</p>
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header"><h1 id="lionmap">lionmap<a class="anchor" aria-label="anchor" href="#lionmap"></a>
+</h1></div>
+<p>Hello! Welcome to the Lionmap package :)</p>
 <p>This package is meant to provide efficient and robust cell type classification while being easy to use.</p>
-<p>Optional features that might increase mapping accuracy include using a custom hierarchy that describes the relationship between cell types, and setting different confidence thresholds for a classification to proceed to the next level of the hierarchy.</p>
+<p>Optional features that might increase accuracy include using a custom hierarchy that describes the relationship between cell types, and setting different confidence thresholds for a classification to proceed to the next level of the hierarchy.</p>
 <p>An example using a sample dataset where we run the entire pipeline (finding marker genes, creating models, and classifying cells) in a few lines of code is shown below.</p>
-<p>```{r, eval=FALSE} #load reference and query datasets data(“hierarchy”,“train_ex_data_bpcells”,“test_ex_data_bpcells”,“train_ex_metadata”) #find marker genes marker_genes = FindMarkerGenes(train_ex_data_bpcells, train_ex_metadata, tree = hierarchy, metadata_cluster_column = “seurat_annotations”, metadata_cell_label_column = “cell_label”) #create models models = GetModels(marker_genes, train_ex_data_bpcells, train_ex_metadata, tree = hierarchy, metadata_cluster_column = “seurat_annotations”, metadata_cell_label_column = “cell_label”) #classify cells using models classifications = Classify(test_ex_data_bpcells, models, hierarchy)</p>
-<p>```</p>
-<p>The package only works using BPCells matrices as gene expression input. BPCells is a package that enables fast gene expression transformations and IO operations while requiring little memory on your computing environment. For more info on BPCells, check out the package <a href="https://bnprks.github.io/BPCells/" class="external-link">here</a>.</p>
-
+<div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jonathan-columbiau/lionmap" class="external-link">lionmap</a></span><span class="op">)</span></span>
+<span><span class="co">#load reference and query datasets</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"hierarchy"</span>,<span class="st">"train_ex_data_bpcells"</span>,<span class="st">"test_ex_data_bpcells"</span>,<span class="st">"train_ex_metadata"</span><span class="op">)</span></span>
+<span><span class="co">#find marker genes </span></span>
+<span><span class="va">marker_genes</span> <span class="op">=</span> <span class="fu"><a href="reference/FindMarkerGenes.html">FindMarkerGenes</a></span><span class="op">(</span><span class="va">train_ex_data_bpcells</span>, <span class="va">train_ex_metadata</span>, tree <span class="op">=</span> <span class="va">hierarchy</span>, metadata_cluster_column <span class="op">=</span> <span class="st">"seurat_annotations"</span>, metadata_cell_label_column <span class="op">=</span> <span class="st">"cell_label"</span><span class="op">)</span></span>
+<span><span class="co">#create models</span></span>
+<span><span class="va">models</span> <span class="op">=</span> <span class="fu"><a href="reference/GetModels.html">GetModels</a></span><span class="op">(</span><span class="va">marker_genes</span>, <span class="va">train_ex_data_bpcells</span>, <span class="va">train_ex_metadata</span>, tree <span class="op">=</span> <span class="va">hierarchy</span>, metadata_cluster_column <span class="op">=</span> <span class="st">"seurat_annotations"</span>, metadata_cell_label_column <span class="op">=</span> <span class="st">"cell_label"</span><span class="op">)</span></span>
+<span><span class="co">#classify cells using models</span></span>
+<span><span class="va">classifications</span> <span class="op">=</span> <span class="fu"><a href="reference/Classify.html">Classify</a></span><span class="op">(</span><span class="va">test_ex_data_bpcells</span>, <span class="va">models</span>, <span class="va">hierarchy</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>You can install the development version of lionmap from <a href="https://github.com/jonathan-columbiau/lionmap" class="external-link">GitHub</a> with:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"jonathan-columbiau/lionmap"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
