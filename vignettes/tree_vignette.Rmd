@@ -1,0 +1,72 @@
+---
+title: "Trees! Create Custom Hierarchies to Enhance Classification"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Trees! Create Custom Hierarchies to Enhance Classification}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(lionmap)
+```
+
+**What is a Hierarchy (aka Tree)?**
+
+Note: The terms \"phylogeny\", \"tree\", and \"hierarchy\" are used interchangeably here.
+
+A hierarchy, also known as a tree, is a type of graph that illustrates the relationships among a set of entities (represented as nodes in a tree). Each node (with the exception of the rootnode) descends from a parent node, and nodes that descend from the same parent are more related to each other than are entities that descend from different parent nodes.
+
+**Why use a hierarchy?**
+
+This article discusses the use of tree-based functionality in creating and applying classification models. The main idea behind using a hierarchy is to incorporate prior knowledge about the relationships between cell types, typically provided in phylogenetic analyses of cell types in large-scale reference atlases, to enhance classification speed and accuracy.
+
+**What are the advantages of using a hierarchy?**
+
+Hierarchies can be used with both pairwise and non-pairwise classification methods. However, since this package employs pairwise methods, the focus here is on benefits in a pairwise context, although some advantages are applicable to both.
+
+**Advantage Number 1: Reduced Computational Resources and Time**
+
+One of the primary benefits of using a hierarchy is reducing the amount of computations you need to perform to get a classification. This becomes particularly crucial when your reference atlas has many cell types (ex: dozens or hundreds). In a pairwise context, using a hierarchy significantly reduces computational time by reducing the number of cell-cell comparisons that need to be performed to get a classification. This is because the number of pairwise comparisons you'll need to perform at any given level of a hierarchy is proportional to the square of the number of celltypes at that level.
+
+Number of comparisons = n(n-1) / 2
+
+As an example, let's take a cell and say it can be classified into one of twenty possible celltypes. Let's say we don't use a hierarchy, and consider each element as equally likely to occur. To get a classification we'll need to perform 20\*(20 - 1) / 2 = 190 comparisons. To generate a picture of what this tree would look like, run the cell below.
+
+```{r, eval=FALSE}
+library(ggtree)
+equal_tree = lionmap::CreateEqualTree(cell_labels = paste0(1:20,"n"),rootnode_name = "Root")
+ggtree(equal_tree) +geom_nodelab(geom = "label", node = "all") 
+
+```
+
+Alternatively, let' say we can group the 20 nodes into 4 groups each with 5 nodes, and these groups can be grouped into two groups each with 2 nodes, and these 2 nodes group together. Let's create a tree that looks like this (we'll get into what the code is doing later), and visualize it using the ggtree package.
+
+```{r, eval=FALSE}
+tree_df = tibble(
+            parent = c("p1","p1","p1","p1","p1",
+                       "p2","p2","p2","p2","p2","p3","p3","p3","p3","p3",
+                       "p4","p4","p4","p4","p4","gp1","gp1","gp2",
+                       "gp2","rootnode","rootnode","rootnode"),
+              node = c("n1","n2","n3","n4","n5",
+                       "n6","n7","n8","n9","n10","n11","n12","n13","n14",
+                       "n15","n16","n17","n18","n19","n20","p1","p2",
+                       "p3","p4","gp1","gp2","rootnode")
+)
+ggtree(treeio::as.phylo(tree_df)) + geom_nodelab(geom = "label", node = "all") 
+```
+
+The total number of comparisons we need to get a classification now are: 2 at the top level (rootnode -\> gp level), 2 for the second level (gp -\> p level), and 5(5-1)/2 = 10 at the final level (p -\> n level) for a grand total of 2 + 2 + 10 = 14 comparisons! A big difference, huh.
+
+**Advantage Number 2: Ability to assess confidence at progressively more difficult classification levels.**
+
+**Advantage Number 3: Avoiding Irrelevant Information that could Throw Off Classification.**
+
+Another advantage of using a hierarchy is that it allows for the avoidance of irrelevant information, such as the gene expression of marker genes, during the current classification of interest.
