@@ -15,12 +15,12 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(lionmap)
+knitr::opts_chunk$set(eval = FALSE, include = FALSE)
 ```
 
 **What is a Hierarchy (aka Tree)?**
 
-Note: The terms \"phylogeny\", \"tree\", and \"hierarchy\" are used interchangeably here.
+Note: The terms "phylogeny", "tree", and "hierarchy" are used interchangeably here.
 
 A hierarchy, also known as a tree, is a type of graph that illustrates the relationships among a set of entities (represented as nodes in a tree). Each node (with the exception of the rootnode) descends from a parent node, and nodes that descend from the same parent are more related to each other than are entities that descend from different parent nodes.
 
@@ -38,18 +38,18 @@ One of the primary benefits of using a hierarchy is reducing the amount of compu
 
 Number of comparisons = n(n-1) / 2
 
-As an example, let's take a cell and say it can be classified into one of twenty possible celltypes. Let's say we don't use a hierarchy, and consider each element as equally likely to occur. To get a classification we'll need to perform 20\*(20 - 1) / 2 = 190 comparisons. To generate a picture of what this tree would look like, run the cell below.
+As an example, let's take a cell and say it can be classified into one of twenty possible celltypes. Let's say we don't use a hierarchy, and consider each element as equally likely to occur. To get a classification we'll need to perform 20\*(20 - 1) / 2 = 190 comparisons.
 
-```{r, eval=FALSE}
+```{r echo=FALSE}
 library(ggtree)
 equal_tree = lionmap::CreateEqualTree(cell_labels = paste0(1:20,"n"),rootnode_name = "Root")
 ggtree(equal_tree) +geom_nodelab(geom = "label", node = "all") 
 
 ```
 
-Alternatively, let' say we can group the 20 nodes into 4 groups each with 5 nodes, and these groups can be grouped into two groups each with 2 nodes, and these 2 nodes group together. Let's create a tree that looks like this (we'll get into what the code is doing later), and visualize it using the ggtree package.
+Alternatively, let' say we can group the 20 nodes into 4 groups each with 5 nodes, and these groups can be grouped into two groups each with 2 nodes, and these 2 nodes group together.
 
-```{r, eval=FALSE}
+```{r, echo=FALSE}
 tree_df = tibble(
             parent = c("p1","p1","p1","p1","p1",
                        "p2","p2","p2","p2","p2","p3","p3","p3","p3","p3",
@@ -70,3 +70,32 @@ The total number of comparisons we need to get a classification now are: 2 at th
 **Advantage Number 3: Avoiding Irrelevant Information that could Throw Off Classification.**
 
 Another advantage of using a hierarchy is that it allows for the avoidance of irrelevant information, such as the gene expression of marker genes, during the current classification of interest.
+
+**Great, now how do you build a hierarchy?**
+
+The package provides a helper function, CreateHierarchy, that takes in a CSV file and returns a tree. The input CSV must contain two columns, one labeled "node" and one labeled "parent" and be arranged in tidy format, which just means each row corresponds to one node.
+
+The first row denotes the column names, so column 1, row 1 should have the value of "node" and column 1, row 2 should have the value of "parent". For each row/node, you have to say what the name of that node is (in the node column), and what the name of the parent node is (in the parent column). The names of the nodes at the most granular level should correspond to the metadata classifications (ex: cluster names) that you also input as a parameter in the FindMarkerGenes and GetModels functions. At higher levels of classification, you should also have names for internal nodes.
+
+This helper function was made so that users can use Excel or another text editor to quickly write out the parent and child relationships in the tree and directly use it.
+
+For example, to create the hierarchical tree shown in the **Advantage Number 1** section above, create a CSV with the following data:
+
+```{r}
+library(kableExtra)
+tree_df = tibble(
+            parent = c("p1","p1","p1","p1","p1",
+                       "p2","p2","p2","p2","p2","p3","p3","p3","p3","p3",
+                       "p4","p4","p4","p4","p4","gp1","gp1","gp2",
+                       "gp2","rootnode","rootnode","rootnode"),
+              node = c("n1","n2","n3","n4","n5",
+                       "n6","n7","n8","n9","n10","n11","n12","n13","n14",
+                       "n15","n16","n17","n18","n19","n20","p1","p2",
+                       "p3","p4","gp1","gp2","rootnode")
+)
+kbl(tree_df) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+```
+
+This package relies heavily on the phylogeny-based infrastructure developed by the Yu lab. For more information, check out their book [**Data Integration, Manipulation and Visualization of Phylogenetic Trees**](https://yulab-smu.top/treedata-book/index.html).
