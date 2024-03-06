@@ -1,0 +1,110 @@
+---
+title: "Importing Data from SeuratData and Getting It Into the Proper Format"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Importing Data from SeuratData and Getting It Into the Proper Format}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Need to install the SeuratData package for the vignette/tutorial, alongside other dependencies. We're using it just because it has accessible datasets with classifications (stored in the Seurat metadata field!). Let us know if you have any issues accessing the data needed for this tutorial.
+
+```{r echo=T, results='hide'}
+library(lionmap)
+library(SeuratData)
+library(Seurat)
+library(BPCells)
+library(magrittr)
+library(caret)
+SeuratData::InstallData("pbmc3k")
+SeuratObject::UpdateSeuratObject(pbmc3k) #just Seurat updating things to get it to work
+```
+
+1.  Get gene expression data in a BPCells matrix and cell type classifications for each cell in the dataset.
+
+Steps:
+
+a. Set a variable to the gene expression matrix of counts stored in the Seurat object. These should be raw counts, not processed, scaled, or normalized post-alignment.
+
+b.  Convert the matrix into a BPCells-formatted object using the write_matrix_memory or write_matrix_dir functions.
+
+Write_matrix_dir stores the GE data in a file on your computer, which is one of the reasons why it's less memory intensive than other file formats.
+
+If you're not working from a Seurat object, you can do this with any of the BPCells-accepted file formats (normal matrices or sparse matrices currently). See the BPCells vignette for more info on how to load your file into the BPCells format (found here: <https://bnprks.github.io/BPCells/index.html> ).
+
+c.  Get a dataframe containing metadata with each cell represented as a row. We'll store the classifications of each cell as a column in the metadata, and the IDs of each cell as another column. Since Seurat already provides classifications in their metadata dataframe in the seurat_annotations column, we're all set for that column! Seurat stores cell IDs as rownames, so we'll add a column called cell_label to represent the cell IDs with the same info
+
+```{r}
+#a. Set a variable to the gene expression matrix of counts stored in the Seurat object. 
+ge_matrix = pbmc3k@assays$RNA@counts
+
+#b. Convert the matrix into a BPCells-formatted object using the write_matrix_memory or write_matrix_dir functions. 
+ge_bpcells = write_matrix_memory(ge_matrix)
+
+#c. Get the metadata of each cell stored in the Seurat object.
+metadata = pbmc3k@meta.data#$seurat_annotations
+metadata$cell_label = rownames(metadata)
+```
+
+2.  Split the bpcells object and classifications into a train/test set, so we can test how well our classification system works using cells from the same dataset.
+
+Note: We're going to get rid of cell classes with a low number of cells (\< 30) in our dataset because there may not be enough info to accurately assign these cells a classification.
+
+Steps: a. Remove classes with less than 30 cells from the ge and annotations dataset.
+
+b. Make an 80/20 train/test split, where we assign a variable to a matrix containing the cells we'll use for our reference (train set) and the cells we'll use for testing whether our classification process works (test set).
+
+```{r}
+#a. Remove classes with less than 30 cells, and any cell with no cell type classification. For the pbmc3k dataset, the data is stored with rows as gene names and columns as cell IDs. 
+
+#this is important - we need to make sure the metadata celltype label column is formatted properly. To work with the package, you need to remove all spaces from the cell type annotations. You can do this in one line by using the str_replace_all function from the stringr package:
+metadata$seurat_annotations = gsub(" ", "", metadata$seurat_annotations, fixed = TRUE)
+metadata$seurat_annotations <- metadata$seurat_annotations %>% as.factor()#changing column type back as factor
+#refactor now
+
+
+classifications = metadata$seurat_annotations
+classes_to_remove = names(table(classifications))[table(classifications) <= 30] 
+#only the platelet class has < 30 cells# identify which cells to remove, and get their positions in the bpcells dataset
+cells_to_remove <- which(classifications %in% classes_to_remove)
+cells_to_remove <- c(cells_to_remove, which(is.na(classifications))) # remove cells with no classification
+
+ge_bpcells = ge_bpcells[,-cells_to_remove]
+#make sure to also remove the corresponding classifications of the cells we just
+metadata = metadata[-cells_to_remove,]
+metadata$seurat_annotations = droplevels(metadata$seurat_annotations)
+
+#b. Make an 80/20 train/test split, where we assign a variable to a matrix containing
+#the cells we'll use for our reference (train set) and the cells we'll use for 
+#testing whether our classification process works (test set). 
+
+#we'll use the CreateDataPartition function from the caret package to do this. 
+#this function takes in a vector of classes, and a proportion to split each class by,
+#and returns the ids to keep in the training set. The remaining ids are the ones we
+#keep in the testing set. 
+train_ids = caret::createDataPartition(metadata$seurat_annotations, p = .8)
+train_ids = train_ids$Resample1#just have this line to get a vector, as opposed to a list
+                                #with a vector of positions (which is what the function                                     #normally returns)
+test_ids = which(! seq(1,nrow(metadata)) %in% train_ids)
+train_ex_data_bpcells = ge_bpcells[,train_ids]
+test_ex_data_bpcells = ge_bpcells[,test_ids]
+
+#Use the same split to separate the metadata vector into
+#a train/test split. This works because the indices of the metadata 
+#and of the GE matrix match, so a subset to one would give data corresponding to
+#the same cells for the subset to the other
+train_ex_metadata = metadata[train_ids,]
+test_ex_metadata = metadata[test_ids,]
+
+```
+
+Now that we have a reference dataset (train_ex_data_pbcells) and a vector of classifications for each cell in the reference (train_classifications), we're almost ready to begin finding marker genes that separate our cell classes! We'll then use these marker genes later on to create models that can classify cells to specific cell types. Check out the intro tutorial for more info on how to do that.
+
+As a way to conveniently access these example datasets without needing to use Seurat to manually get the pbmc3k dataset on each of the tutorials, the train ge, test ge, + associated metadata are automatically installed in the package as train_ex_data_bpcells, test_ex_data_bpcells, train_ex_metadata, test_ex_metadata. You can get these datasets by typing data(name of file), ex: data(train_ex_metadata). We'll use this in the other vignettees.

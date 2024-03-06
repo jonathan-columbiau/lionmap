@@ -12,9 +12,9 @@ Classify(bpcells_query, models, tree_struc, prop_max_threshold = 0.66)
 
 \item{models}{Models created through GetMarkerGenes function.}
 
-\item{tree_struc}{Tree used in model creation.}
-
 \item{prop_max_threshold}{Proportion of evidence required for a test}
+
+\item{tree}{Tree used in model creation.}
 }
 \value{
 A vector providing classifications of cells in bpcells_query in the same order.

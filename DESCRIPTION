@@ -9,13 +9,12 @@ Description: This package performs consensus classification on single cell
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.1
 biocViews:
 Depends: 
     plyr,
     caret,
     data.tree,
-    dplyr,
     e1071,
     ggplot2,
     glmnet,
@@ -24,13 +23,13 @@ Depends:
     Matrix,
     ranger,
     Seurat,
-    SeuratObject,
     stats,
     stringr,
     testthat,
-    treeio,
-    tidyr,
-    R (>= 2.10)
+    treeio
+Imports:
+  dplyr,
+  tidyr
 Remotes: 
     bnprks/BPCells,
     satijalab/seurat-data
@@ -39,6 +38,8 @@ BugReports: https://github.com/jonathan-columbiau/lionmap/issues
 Suggests: 
     knitr,
     rmarkdown,
-    tidytree
+    tidytree,
+    SeuratObject,
+    ggtree
 VignetteBuilder: knitr
 LazyData: true
