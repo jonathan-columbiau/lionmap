@@ -18,21 +18,27 @@ knitr::opts_chunk$set(
 )
 ```
 
-There's one more thing we need to do before finding marker genes, and
-that is to create a tree that describes the hierarchy of our cell
-classifications. A tree describes the structure of the data (see the
-Creating Custom Trees page for more info), and is one of the unique
-aspects of this package - the ability to create a structure to embed
-info on plausible classifications, and to use that info to make better
-classifications. For this basic tutorial, we'll just assume there's no
-hierarchical structure, and that celltypes are equally likely to be
-assigned to any of the possible classes (aka an equal tree). I've
-created a helper function, CreateEqualTree, to do this, which just takes
-in a vector of possible cell classes, and creates an equal tree for you.
+Let's load the data we'll use for the package.
 
-You'll need to install the treeio package from Bioconductor to get this
-to work. Check it out [here for install
-info](https://bioconductor.org/packages/release/bioc/html/treeio.html):
+```{r}
+data("train_ex_data_bpcells")
+data("train_ex_metadata")
+data("test_ex_data_bpcells")
+data("test_ex_metadata")
+```
+
+The first thing we need to do is to create a tree that describes the
+hierarchy of our cell classifications. A tree describes the structure of
+the data (see the Creating Custom Trees page for more info), and is one
+of the unique aspects of this package - the ability to create a
+structure that embeds info on plausible classifications based on
+previously known info on the relationships between celltypes, and to use
+this structure to make better classifications. For this basic tutorial,
+we'll just assume there's no hierarchical structure, and that celltypes
+are equally likely to be assigned to any of the possible classes (aka an
+equal tree). I've created a helper function, CreateEqualTree, to do
+this, which just takes in a vector of possible cell classes, and creates
+an equal tree for you.
 
 ```{r}
 possible_cell_classes = train_ex_metadata$seurat_annotations %>% unique()
@@ -78,23 +84,17 @@ marker genes that distinguish the classes. It does this for each of the
 possible pairs of cell classes you could create.
 
 We'll also get all the marker genes that distinguish each pair of cell
-classes! Let's take a look at the output, stored in the marker_genes
-variable. Write the following to explore the output and then read on
-ahead for more info.
+classes! Let's take a look at the output for the first 5 matchups,
+stored in the marker_genes variable. Write the following to explore the
+output and then read on ahead for more info.
 
 ```{r}
-head(str(marker_genes), max.level = 2)
+str(marker_genes[[1]][1:5])
 ```
-
-Since Lionmap works on a hierarchy, we have a rootnode (the common node
-from which all cell types descend). That's what the list at the highest
-level is named for. And at each subsequent level, we have a sublist with
-marker genes that distinguish two cell classes (ex: MemoryCD4T vs B). We
-see this for all the matchups.
 
 Now we can use this set of marker genes to create our list of models!
 
-Let's use the **GetModels** function to do this.
+We will use the **GetModels** function to do this.
 
 Just like before, we'll need to input the following info, just with the
 addition of the marker gene list we just created:
@@ -130,11 +130,10 @@ If everything goes well, the output will indicate the tests checking
 proper formatting passed, and will then list the models as they are
 being created.
 
-Let's have a look at the structure of the list with the str function (if
-you're using Rstudio)
+Let's have a look at the structure of the list with the str function:
 
 ```{r}
-str(models, max.level = 2)
+str(models[[1]][1:5], max.level = 2)
 ```
 
 The structure of this object, just like the marker genes, is a list of
@@ -142,10 +141,9 @@ lists. Each sublist provides models that can be used to classify a cell
 between one of two classes, and we have models that differentiate all
 possible classes at each level of the celltype hierarchy (equal_tree).
 It also contains information on how to transform data we want to
-classify to be in the same PC-space as the models we just created (if
-that didn't mean anything to you, don't worry, it's just something about
-properly formatting the data). We'll use all these models in the next
-step, to classify cells to specific celltypes.
+classify to be in the same PC-space as the models we just created. We'll
+use all these models in the next step, to classify cells to specific
+celltypes.
 
 To classify cells to previously defined celltypes, we'll use the
 Classify function and will need to enter the following:
