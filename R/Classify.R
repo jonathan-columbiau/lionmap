@@ -13,7 +13,18 @@
 #' @export
 #'
 #' @examples
-#' Classify(query_obj, models, tree)
+#' data("train_ex_data_bpcells")
+#' data("train_ex_metadata")
+#' data("test_ex_data_bpcells")
+#' data("test_ex_metadata")
+#' possible_cell_classes = train_ex_metadata$seurat_annotations %>% unique()
+#' equal_tree = CreateEqualTree(cell_labels = possible_cell_classes)
+#' marker_genes = FindMarkerGenes(ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
+#' models <- GetModels(marker_genes = marker_genes, ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
+#' query_classifications = Classify(bpcells_query = test_ex_data_bpcells,models = models,tree_struc = equal_tree)
+#'
+#'
+#'
 Classify <- function(bpcells_query, models, tree_struc, prop_max_threshold = .66) {
   # initial rootnode level - do all at once. All tree_struc have rootnodes, even if all clusters are at one level
   rootnode <- tree_struc %>%

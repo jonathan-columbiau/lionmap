@@ -49,6 +49,8 @@ ggtree(equal_tree) +geom_nodelab(geom = "label", node = "all")
 
 Alternatively, let' say we can group the 20 nodes into 4 groups each with 5 nodes, and these groups can be grouped into two groups each with 2 nodes, and these 2 nodes group together.
 
+You can manually create a tree that looks like this with the following code:
+
 ```{r, echo=FALSE}
 tree_df = tibble(
             parent = c("p1","p1","p1","p1","p1",
@@ -62,6 +64,8 @@ tree_df = tibble(
 )
 ggtree(treeio::as.phylo(tree_df)) + geom_nodelab(geom = "label", node = "all") 
 ```
+
+Or, you can use the helper function CreateHierarchy, which takes in a csv file with the columns "parent" and "node", and provides gives the relationships between each node with its parent node in the tree. The function will return a TreeData object, which you can use with the functions in Lionmap.
 
 The total number of comparisons we need to get a classification now are: 2 at the top level (rootnode -\> gp level), 2 for the second level (gp -\> p level), and 5(5-1)/2 = 10 at the final level (p -\> n level) for a grand total of 2 + 2 + 10 = 14 comparisons! A big difference, huh.
 

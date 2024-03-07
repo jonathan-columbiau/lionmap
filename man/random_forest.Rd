@@ -18,6 +18,11 @@ rf model trained on evenly split dataset (upsamples if classes aren't evenly spl
 Random Forest  helper function (uses ranger backend)
 }
 \examples{
-ex_model = random_forest(reference_dataset, celltype_labels)
+data("iris")
+dataset = iris[iris$Species \%in\% c("setosa","versicolor"),]
+labels = as.factor(dataset$Species)
+labels = droplevels(labels)
+dataset = dataset[,1:4]
+ex_model = random_forest(dataset, labels)
 }
 \keyword{internal}

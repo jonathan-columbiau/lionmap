@@ -31,7 +31,7 @@ SeuratObject::UpdateSeuratObject(pbmc3k) #just Seurat updating things to get it 
 
 Steps:
 
-a. Set a variable to the gene expression matrix of counts stored in the Seurat object. These should be raw counts, not processed, scaled, or normalized post-alignment.
+a.  Set a variable to the gene expression matrix of counts stored in the Seurat object. These should be raw counts, not processed, scaled, or normalized post-alignment.
 
 b.  Convert the matrix into a BPCells-formatted object using the write_matrix_memory or write_matrix_dir functions.
 
@@ -59,7 +59,7 @@ Note: We're going to get rid of cell classes with a low number of cells (\< 30) 
 
 Steps: a. Remove classes with less than 30 cells from the ge and annotations dataset.
 
-b. Make an 80/20 train/test split, where we assign a variable to a matrix containing the cells we'll use for our reference (train set) and the cells we'll use for testing whether our classification process works (test set).
+b.  Make an 80/20 train/test split, where we assign a variable to a matrix containing the cells we'll use for our reference (train set) and the cells we'll use for testing whether our classification process works (test set).
 
 ```{r}
 #a. Remove classes with less than 30 cells, and any cell with no cell type classification. For the pbmc3k dataset, the data is stored with rows as gene names and columns as cell IDs. 

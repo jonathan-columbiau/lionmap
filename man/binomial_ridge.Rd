@@ -18,6 +18,11 @@ Binomial ridge model trained on evenly split dataset (upsamples if classes aren'
 Binomial ridge helper function
 }
 \examples{
-ex_model = binomial_ridge(reference_dataset, celltype_labels)
+data("iris")
+dataset = iris[iris$Species \%in\% c("setosa","versicolor"),]
+labels = as.factor(dataset$Species)
+labels = droplevels(labels)
+dataset = dataset[,1:4]
+ex_model = binomial_ridge(dataset, labels)
 }
 \keyword{internal}

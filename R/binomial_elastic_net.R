@@ -7,7 +7,12 @@
 #' @keywords internal
 #'
 #' @examples
-#' ex_model = binomial_elastic_net(reference_dataset, celltype_labels)
+#' data("iris")
+#' dataset = iris[iris$Species %in% c("setosa","versicolor"),]
+#' labels = as.factor(dataset$Species)
+#' labels = droplevels(labels)
+#' dataset = dataset[,1:4]
+#' ex_model = binomial_elastic_net(dataset, labels)
 binomial_elastic_net <- function(reference_dataset, celltype_labels) {
   upsampled_dataset <- caret::upSample(x = reference_dataset, y = celltype_labels, yname =  "celltype_labels", list = T)
   celltype_labels <- upsampled_dataset[["y"]]

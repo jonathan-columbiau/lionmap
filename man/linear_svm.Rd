@@ -18,6 +18,11 @@ linear_svm model trained on evenly split dataset (upsamples if classes aren't ev
 linear_svm  helper function
 }
 \examples{
-ex_model = linear_svm(reference_dataset, celltype_labels)
+data("iris")
+dataset = iris[iris$Species \%in\% c("setosa","versicolor"),]
+labels = as.factor(dataset$Species)
+labels = droplevels(labels)
+dataset = dataset[,1:4]
+ex_model = linear_svm(dataset, labels)
 }
 \keyword{internal}

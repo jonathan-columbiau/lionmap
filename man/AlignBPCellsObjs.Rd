@@ -20,7 +20,8 @@ Align BPCells Objects so they both have the same genes (useful for getting refer
 query datasets in the proper format before finding marker genes).
 }
 \examples{
-
-train_ex_data_bpc = AlignBPCellsObjs(bpcells_obj1, bpcells_obj2)
-bpcells_obj2 = AlignBPCellsObjs(bpcells_obj2, bpcells_obj1)
+data("train_ex_data_bpcells")
+data("test_ex_data_bpcells")
+train_ex_data_bpcells = AlignBPCellsObjs(train_ex_data_bpcells, test_ex_data_bpcells)
+test_ex_data_bpcells = AlignBPCellsObjs(test_ex_data_bpcells, train_ex_data_bpcells)
 }

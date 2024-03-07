@@ -7,7 +7,12 @@
 #' @keywords internal
 #'
 #' @examples
-#' ex_model = naive_bayes(reference_dataset, celltype_labels)
+#' data("iris")
+#' dataset = iris[iris$Species %in% c("setosa","versicolor"),]
+#' labels = as.factor(dataset$Species)
+#' labels = droplevels(labels)
+#' dataset = dataset[,1:4]
+#' ex_model = naive_bayes(dataset, labels)
 naive_bayes <- function(reference_dataset, celltype_labels) {
   #upsample minority class to make class frequencies equal
   reference_dataset <- caret::upSample(x = reference_dataset, y = celltype_labels, yname = "celltype_labels")

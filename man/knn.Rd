@@ -18,6 +18,11 @@ knn model trained on evenly split dataset (upsamples if classes aren't evenly sp
 knn  helper function
 }
 \examples{
-ex_model = knn(reference_dataset, celltype_labels)
+data("iris")
+dataset = iris[iris$Species \%in\% c("setosa","versicolor"),]
+labels = as.factor(dataset$Species)
+labels = droplevels(labels)
+dataset = dataset[,1:4]
+ex_model = knn(dataset, labels)
 }
 \keyword{internal}

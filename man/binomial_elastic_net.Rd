@@ -18,6 +18,11 @@ Binomial Elastic Net model trained on evenly split dataset (upsamples if classes
 Binomial elastic net helper function
 }
 \examples{
-ex_model = binomial_elastic_net(reference_dataset, celltype_labels)
+data("iris")
+dataset = iris[iris$Species \%in\% c("setosa","versicolor"),]
+labels = as.factor(dataset$Species)
+labels = droplevels(labels)
+dataset = dataset[,1:4]
+ex_model = binomial_elastic_net(dataset, labels)
 }
 \keyword{internal}

@@ -18,7 +18,13 @@
 #' @export
 #'
 #' @examples
-#' FindMarkerGenes(ref_bpcells, ref_metadata)
+#' data("train_ex_data_bpcells")
+#' data("train_ex_metadata")
+#' data("test_ex_data_bpcells")
+#' data("test_ex_metadata")
+#' possible_cell_classes = train_ex_metadata$seurat_annotations %>% unique()
+#' equal_tree = CreateEqualTree(cell_labels = possible_cell_classes)
+#' marker_genes = FindMarkerGenes(ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
 FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metadata_cluster_column = "cell_type", metadata_cell_label_column = "cellid",n_cells_sampled = 500) {
 
   #unit test: ref_metadata is a dataframe

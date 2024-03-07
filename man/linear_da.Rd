@@ -18,6 +18,11 @@ linear_da model trained on evenly split dataset (upsamples if classes aren't eve
 linear_da  helper function
 }
 \examples{
-ex_model = linear_da(reference_dataset, celltype_labels)
+data("iris")
+dataset = iris[iris$Species \%in\% c("setosa","versicolor"),]
+labels = as.factor(dataset$Species)
+labels = droplevels(labels)
+dataset = dataset[,1:4]
+ex_model = linear_da(dataset, labels)
 }
 \keyword{internal}

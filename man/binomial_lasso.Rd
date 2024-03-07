@@ -18,6 +18,11 @@ Binomial lasso model trained on evenly split dataset (upsamples if classes aren'
 Binomial lasso helper function
 }
 \examples{
-ex_model = binomial_lasso(reference_dataset, celltype_labels)
+data("iris")
+dataset = iris[iris$Species \%in\% c("setosa","versicolor"),]
+labels = as.factor(dataset$Species)
+labels = droplevels(labels)
+dataset = dataset[,1:4]
+ex_model = binomial_lasso(dataset, labels)
 }
 \keyword{internal}
