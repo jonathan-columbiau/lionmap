@@ -14,17 +14,20 @@ knitr::opts_chunk$set(
 )
 ```
 
-Need to install the SeuratData package for the vignette/tutorial, alongside other dependencies. We're using it just because it has accessible datasets with classifications (stored in the Seurat metadata field!). Let us know if you have any issues accessing the data needed for this tutorial.
+The first step is to install dependencies (including SeuratData). We're using SeuratData just because it has accessible datasets with classifications (stored in the Seurat metadata field!). Let us know if you have any issues accessing the data needed for this tutorial.
 
 ```{r echo=T, results='hide'}
+install.packages("devtools")
+devtools::install_github("satijalab/seurat-data")
+
 library(lionmap)
-library(SeuratData)
 library(Seurat)
 library(BPCells)
 library(magrittr)
 library(caret)
+library(SeuratData)
 SeuratData::InstallData("pbmc3k")
-SeuratObject::UpdateSeuratObject(pbmc3k) #just Seurat updating things to get it to work
+SeuratObject::UpdateSeuratObject(pbmc3k) #just Seurat updating things to get it to be v5
 ```
 
 1.  Get gene expression data in a BPCells matrix and cell type classifications for each cell in the dataset.

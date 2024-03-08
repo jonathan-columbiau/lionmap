@@ -16,13 +16,11 @@ Depends:
     caret,
     data.tree,
     e1071,
-    ggplot2,
     glmnet,
     magrittr,
     MASS,
     Matrix,
     ranger,
-    Seurat,
     stats,
     stringr,
     testthat,
@@ -40,6 +38,8 @@ Suggests:
     rmarkdown,
     tidytree,
     SeuratObject,
-    ggtree
+    ggtree,
+    Seurat,
+    ggplot2
 VignetteBuilder: knitr
 LazyData: true
