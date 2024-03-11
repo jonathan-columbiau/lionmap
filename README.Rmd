@@ -21,7 +21,7 @@ Hello! Welcome to the Lionmap package :)
 
 This package is meant to provide efficient and robust cell type classification while being easy to use.
 
-Optional features that might increase  accuracy include using a custom hierarchy that describes the relationship between cell types, and setting different confidence thresholds for a classification to proceed to the next level of the hierarchy.
+Optional features to increase accuracy include the use of a custom hierarchy that describes the relationship between cell types, and user-defined confidence thresholds at each stage of the classification.
 
 An example using a sample dataset where we run the entire pipeline (finding marker genes, creating models, and classifying cells) in a few lines of code is shown below.
 
