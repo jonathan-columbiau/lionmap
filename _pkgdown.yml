@@ -13,12 +13,6 @@ reference:
   - GetModels
   - Classify
 
-- title: Data Formatting
-  desc: >
-    To help you get input GE data into the correct
-    format.
-  contents:
-  - AlignBPCellsObjs
 
 - title: Hierarchy Creation
   desc: >
