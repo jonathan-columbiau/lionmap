@@ -9,23 +9,32 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
+  eval = FALSE,
   collapse = TRUE,
   comment = "#>"
 )
 ```
 
-The first step is to install dependencies (including SeuratData). We're using SeuratData just because it has accessible datasets with classifications (stored in the Seurat metadata field!). Let us know if you have any issues accessing the data needed for this tutorial.
+The first step is to install dependencies - SeuratData and a package called devtools to help us install it. SeuratData is a dataset manager with multiple commonly used datasets stored in the Seurat object format. Let us know if you have any issues accessing the data needed for this tutorial.
 
-```{r echo=T, results='hide'}
+Install packages
+```{r}
 install.packages("devtools")
 devtools::install_github("satijalab/seurat-data")
+```
 
+Load libraries 
+```{r}
 library(lionmap)
 library(Seurat)
 library(BPCells)
 library(magrittr)
 library(caret)
 library(SeuratData)
+```
+
+Install pbmc3k Seurat object
+```{r}
 SeuratData::InstallData("pbmc3k")
 SeuratObject::UpdateSeuratObject(pbmc3k) #just Seurat updating things to get it to be v5
 ```
@@ -105,7 +114,6 @@ test_ex_data_bpcells = ge_bpcells[,test_ids]
 #the same cells for the subset to the other
 train_ex_metadata = metadata[train_ids,]
 test_ex_metadata = metadata[test_ids,]
-
 ```
 
 Now that we have a reference dataset (train_ex_data_pbcells) and a vector of classifications for each cell in the reference (train_classifications), we're almost ready to begin finding marker genes that separate our cell classes! We'll then use these marker genes later on to create models that can classify cells to specific cell types. Check out the intro tutorial for more info on how to do that.

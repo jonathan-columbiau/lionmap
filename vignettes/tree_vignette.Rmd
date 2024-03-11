@@ -7,15 +7,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
-
-```{r setup}
-knitr::opts_chunk$set(eval = FALSE, include = FALSE)
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
 ```
 
 **What is a Hierarchy (aka Tree)?**
@@ -40,7 +33,7 @@ Number of comparisons = n(n-1) / 2
 
 As an example, let's take a cell and say it can be classified into one of twenty possible celltypes. Let's say we don't use a hierarchy, and consider each element as equally likely to occur. To get a classification we'll need to perform 20\*(20 - 1) / 2 = 190 comparisons.
 
-```{r echo=FALSE}
+```{r}
 library(ggtree)
 library(lionmap)
 library(tibble)
@@ -53,7 +46,7 @@ Alternatively, let' say we can group the 20 nodes into 4 groups each with 5 node
 
 You can manually create a tree that looks like this with the following code:
 
-```{r, echo=FALSE}
+```{r}
 tree_df = tibble(
             parent = c("p1","p1","p1","p1","p1",
                        "p2","p2","p2","p2","p2","p3","p3","p3","p3","p3",
@@ -71,7 +64,9 @@ Or, you can use the helper function CreateHierarchy, which takes in a csv file w
 
 The total number of comparisons we need to get a classification now are: 2 at the top level (rootnode -\> gp level), 2 for the second level (gp -\> p level), and 5(5-1)/2 = 10 at the final level (p -\> n level) for a grand total of 2 + 2 + 10 = 14 comparisons! A big difference, huh.
 
-**Advantage Number 2: Ability to assess confidence at progressively more difficult classification levels.**
+**Advantage Number 2: Ability to assess confidence at progressively more comprehensive classification levels.**
+
+Often, a cell may be differentiated 
 
 **Advantage Number 3: Avoiding Irrelevant Information that could Throw Off Classification.**
 
@@ -87,7 +82,7 @@ This helper function was made so that users can use Excel or another text editor
 
 For example, to create the hierarchical tree shown in the **Advantage Number 1** section above, create a CSV with the following data:
 
-```{r echo=FALSE}
+```{r}
 library(kableExtra)
 tree_df = tibble(
             parent = c("p1","p1","p1","p1","p1",
