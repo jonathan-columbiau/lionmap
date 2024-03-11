@@ -42,6 +42,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/Basic-Tutorial.html">Intro Tutorial</a>
+    <a class="dropdown-item" href="../articles/seurat_obj_vignette.html">Importing Data from SeuratData and Getting It Into the Proper Format</a>
     <a class="dropdown-item" href="../articles/tree_vignette.html">Trees! Create Custom Hierarchies to Enhance Classification</a>
   </div>
 </li>
@@ -78,142 +79,26 @@
 
     
     
-<p>Need to install the SeuratData package for the vignette/tutorial,
-alongside other dependencies. We’re using it just because it has
-accessible datasets with classifications (stored in the Seurat metadata
-field!). Let us know if you have any issues accessing the data needed
-for this tutorial.</p>
+<p>Let’s load the data we’ll use for the package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"jonathan-columbiau/lionmap"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"train_ex_data_bpcells"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"train_ex_metadata"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"test_ex_data_bpcells"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"test_ex_metadata"</span><span class="op">)</span></span></code></pre></div>
+<p>The first thing we need to do is to create a tree that describes the
+hierarchy of our cell classifications. A tree describes the structure of
+the data (see the Creating Custom Trees page for more info), and is one
+of the unique aspects of this package - the ability to create a
+structure that embeds info on plausible classifications based on
+previously known info on the relationships between celltypes, and to use
+this structure to make better classifications. For this basic tutorial,
+we’ll just assume there’s no hierarchical structure, and that celltypes
+are equally likely to be assigned to any of the possible classes (aka an
+equal tree). I’ve created a helper function, CreateEqualTree, to do
+this, which just takes in a vector of possible cell classes, and creates
+an equal tree for you.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jonathan-columbiau/lionmap" class="external-link">lionmap</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SeuratData</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">BPCells</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/topepo/caret/" class="external-link">caret</a></span><span class="op">)</span></span>
-<span><span class="fu">SeuratData</span><span class="fu">::</span><span class="fu">InstallData</span><span class="op">(</span><span class="st">"pbmc3k"</span><span class="op">)</span></span>
-<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SeuratObject/man/UpdateSeuratObject.html" class="external-link">UpdateSeuratObject</a></span><span class="op">(</span><span class="va">pbmc3k</span><span class="op">)</span> <span class="co">#just Seurat updating things to get it to work</span></span></code></pre></div>
-<ol style="list-style-type: decimal">
-<li>Get gene expression data in a BPCells matrix and cell type
-classifications for each cell in the dataset.</li>
-</ol>
-<p>Steps: a. Set a variable to the gene expression matrix of counts
-stored in the Seurat object. These should be raw counts, not processed,
-scaled, or normalized post-alignment.</p>
-<ol start="2" style="list-style-type: lower-alpha">
-<li>Convert the matrix into a BPCells-formatted object using the
-write_matrix_memory or write_matrix_dir functions.</li>
-</ol>
-<p>Write_matrix_dir stores the GE data in a file on your computer, which
-is one of the reasons why it’s less memory intensive than other file
-formats.</p>
-<p>If you’re not working from a Seurat object, you can do this with any
-of the BPCells-accepted file formats (normal matrices or sparse matrices
-currently). See the BPCells vignette for more info on how to load your
-file into the BPCells format (found here: <a href="https://bnprks.github.io/BPCells/index.html" class="external-link uri">https://bnprks.github.io/BPCells/index.html</a> ).</p>
-<ol start="3" style="list-style-type: lower-alpha">
-<li>Get a dataframe containing metadata with each cell represented as a
-row. We’ll store the classifications of each cell as a column in the
-metadata, and the IDs of each cell as another column. Since Seurat
-already provides classifications in their metadata dataframe in the
-seurat_annotations column, we’re all set for that column! Seurat stores
-cell IDs as rownames, so we’ll add a column called cell_label to
-represent the cell IDs with the same info</li>
-</ol>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#a. Set a variable to the gene expression matrix of counts stored in the Seurat object. </span></span>
-<span><span class="va">ge_matrix</span> <span class="op">=</span> <span class="va">pbmc3k</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">counts</span></span>
-<span></span>
-<span><span class="co">#b. Convert the matrix into a BPCells-formatted object using the write_matrix_memory or write_matrix_dir functions. </span></span>
-<span><span class="va">ge_bpcells</span> <span class="op">=</span> <span class="fu">write_matrix_memory</span><span class="op">(</span><span class="va">ge_matrix</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#c. Get the metadata of each cell stored in the Seurat object.</span></span>
-<span><span class="va">metadata</span> <span class="op">=</span> <span class="va">pbmc3k</span><span class="op">@</span><span class="va">meta.data</span><span class="co">#$seurat_annotations</span></span>
-<span><span class="va">metadata</span><span class="op">$</span><span class="va">cell_label</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span></span></code></pre></div>
-<ol start="2" style="list-style-type: decimal">
-<li>Split the bpcells object and classifications into a train/test set,
-so we can test how well our classification system works using cells from
-the same dataset.</li>
-</ol>
-<p>Note: We’re going to get rid of cell classes with a low number of
-cells (&lt; 30) in our dataset because there may not be enough info to
-accurately assign these cells a classification.</p>
-<p>Steps: a. Remove classes with less than 30 cells from the ge and
-annotations dataset. b. Make an 80/20 train/test split, where we assign
-a variable to a matrix containing the cells we’ll use for our reference
-(train set) and the cells we’ll use for testing whether our
-classification process works (test set).</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#a. Remove classes with less than 30 cells, and any cell with no cell type classification. For the pbmc3k dataset, the data is stored with rows as gene names and columns as cell IDs. </span></span>
-<span></span>
-<span><span class="co">#this is important - we need to make sure the metadata celltype label column is formatted properly. To work with the package, you need to remove all spaces from the cell type annotations. You can do this in one line by using the str_replace_all function from the stringr package:</span></span>
-<span><span class="va">metadata</span><span class="op">$</span><span class="va">seurat_annotations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">" "</span>, <span class="st">""</span>, <span class="va">metadata</span><span class="op">$</span><span class="va">seurat_annotations</span>, fixed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">metadata</span><span class="op">$</span><span class="va">seurat_annotations</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">$</span><span class="va">seurat_annotations</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="op">)</span><span class="co">#changing column type back as factor</span></span>
-<span><span class="co">#refactor now</span></span>
-<span></span>
-<span></span>
-<span><span class="va">classifications</span> <span class="op">=</span> <span class="va">metadata</span><span class="op">$</span><span class="va">seurat_annotations</span></span>
-<span><span class="va">classes_to_remove</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">classifications</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">classifications</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="fl">30</span><span class="op">]</span> </span>
-<span><span class="co">#only the platelet class has &lt; 30 cells# identify which cells to remove, and get their positions in the bpcells dataset</span></span>
-<span><span class="va">cells_to_remove</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">classifications</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">classes_to_remove</span><span class="op">)</span></span>
-<span><span class="va">cells_to_remove</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cells_to_remove</span>, <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">classifications</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co"># remove cells with no classification</span></span>
-<span></span>
-<span><span class="va">ge_bpcells</span> <span class="op">=</span> <span class="va">ge_bpcells</span><span class="op">[</span>,<span class="op">-</span><span class="va">cells_to_remove</span><span class="op">]</span></span>
-<span><span class="co">#make sure to also remove the corresponding classifications of the cells we just</span></span>
-<span><span class="va">metadata</span> <span class="op">=</span> <span class="va">metadata</span><span class="op">[</span><span class="op">-</span><span class="va">cells_to_remove</span>,<span class="op">]</span></span>
-<span><span class="va">metadata</span><span class="op">$</span><span class="va">seurat_annotations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">$</span><span class="va">seurat_annotations</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#b. Make an 80/20 train/test split, where we assign a variable to a matrix containing</span></span>
-<span><span class="co">#the cells we'll use for our reference (train set) and the cells we'll use for </span></span>
-<span><span class="co">#testing whether our classification process works (test set). </span></span>
-<span></span>
-<span><span class="co">#we'll use the CreateDataPartition function from the caret package to do this. </span></span>
-<span><span class="co">#this function takes in a vector of classes, and a proportion to split each class by,</span></span>
-<span><span class="co">#and returns the ids to keep in the training set. The remaining ids are the ones we</span></span>
-<span><span class="co">#keep in the testing set. </span></span>
-<span><span class="va">train_ids</span> <span class="op">=</span> <span class="fu">caret</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/caret/man/createDataPartition.html" class="external-link">createDataPartition</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">$</span><span class="va">seurat_annotations</span>, p <span class="op">=</span> <span class="fl">.8</span><span class="op">)</span></span>
-<span><span class="va">train_ids</span> <span class="op">=</span> <span class="va">train_ids</span><span class="op">$</span><span class="va">Resample1</span><span class="co">#just have this line to get a vector, as opposed to a list</span></span>
-<span>                                <span class="co">#with a vector of positions (which is what the function                                     #normally returns)</span></span>
-<span><span class="va">test_ids</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="op">!</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">train_ids</span><span class="op">)</span></span>
-<span><span class="va">train_ge_bpcells</span> <span class="op">=</span> <span class="va">ge_bpcells</span><span class="op">[</span>,<span class="va">train_ids</span><span class="op">]</span></span>
-<span><span class="va">test_ge_bpcells</span> <span class="op">=</span> <span class="va">ge_bpcells</span><span class="op">[</span>,<span class="va">test_ids</span><span class="op">]</span></span>
-<span></span>
-<span><span class="co">#Use the same split to separate the metadata vector into</span></span>
-<span><span class="co">#a train/test split. This works because the indices of the metadata </span></span>
-<span><span class="co">#and of the GE matrix match, so a subset to one would give data corresponding to</span></span>
-<span><span class="co">#the same cells for the subset to the other</span></span>
-<span><span class="va">train_metadata</span> <span class="op">=</span> <span class="va">metadata</span><span class="op">[</span><span class="va">train_ids</span>,<span class="op">]</span></span>
-<span><span class="va">test_ge_metadata</span> <span class="op">=</span> <span class="va">metadata</span><span class="op">[</span><span class="va">test_ids</span>,<span class="op">]</span></span></code></pre></div>
-<p>Now that we have a reference dataset (train_ge_pbcells) and a vector
-of classifications for each cell in the reference
-(train_classifications), we’re almost ready to begin finding marker
-genes that separate our cell classes! We’ll then use these marker genes
-later on to create models that can classify cells to specific cell
-types.</p>
-<p>As a way to conveniently access these example datasets without
-needing to use Seurat to manually get the pbmc3k dataset, the train ge,
-test ge, + associated metadata are automatically installed in the
-package as train_ex_data_bpcells, test_ex_data_bpcells,
-train_ex_metadata, test_ex_metadata. You can get these datasets by
-typing data(name of file), ex: data(train_ex_metadata).</p>
-<p>There’s one more thing we need to do before finding marker genes, and
-that is to create a tree that describes the hierarchy of our cell
-classifications. A tree describes the structure of the data (see the
-Creating Custom Trees page for more info), and is one of the unique
-aspects of this package - the ability to create a structure to embed
-info on plausible classifications, and to use that info to make better
-classifications. For this basic tutorial, we’ll just assume there’s no
-hierarchical structure, and that celltypes are equally likely to be
-assigned to any of the possible classes (aka an equal tree). I’ve
-created a helper function, CreateEqualTree, to do this, which just takes
-in a vector of possible cell classes, and creates an equal tree for
-you.</p>
-<p>You’ll need to install the treeio package from Bioconductor to get
-this to work. Check it out <a href="https://bioconductor.org/packages/release/bioc/html/treeio.html" class="external-link">here
-for install info</a>:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">possible_cell_classes</span> <span class="op">=</span> <span class="va">train_metadata</span><span class="op">$</span><span class="va">seurat_annotations</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">possible_cell_classes</span> <span class="op">=</span> <span class="va">train_ex_metadata</span><span class="op">$</span><span class="va">seurat_annotations</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">equal_tree</span> <span class="op">=</span> <span class="fu"><a href="../reference/CreateEqualTree.html">CreateEqualTree</a></span><span class="op">(</span>cell_labels <span class="op">=</span> <span class="va">possible_cell_classes</span><span class="op">)</span></span>
 <span><span class="co">#OPTIONAL: let's visualize the tree we created (have to install the ggtree package on bioconductor to do this)</span></span>
 <span><span class="co">#ggtree(equal_tree) +geom_nodelab(geom = "label", node = "all") </span></span></code></pre></div>
@@ -237,8 +122,8 @@ each pair of corresponding cells, or the
 <strong>n_cells_sampled</strong> parameter, which allows us to choose
 the number of cells we sample to find differences for each particular
 pair of celltypes.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">marker_genes</span> <span class="op">=</span> <span class="fu"><a href="../reference/FindMarkerGenes.html">FindMarkerGenes</a></span><span class="op">(</span>ref_bpcells <span class="op">=</span> <span class="va">train_ge_bpcells</span>, ref_metadata <span class="op">=</span> <span class="va">train_metadata</span>, tree <span class="op">=</span> <span class="va">equal_tree</span>, metadata_cluster_column <span class="op">=</span> <span class="st">"seurat_annotations"</span>, metadata_cell_label_column <span class="op">=</span> <span class="st">"cell_label"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">marker_genes</span> <span class="op">=</span> <span class="fu"><a href="../reference/FindMarkerGenes.html">FindMarkerGenes</a></span><span class="op">(</span>ref_bpcells <span class="op">=</span> <span class="va">train_ex_data_bpcells</span>, ref_metadata <span class="op">=</span> <span class="va">train_ex_metadata</span>, tree <span class="op">=</span> <span class="va">equal_tree</span>, metadata_cluster_column <span class="op">=</span> <span class="st">"seurat_annotations"</span>, metadata_cell_label_column <span class="op">=</span> <span class="st">"cell_label"</span><span class="op">)</span></span></code></pre></div>
 <p>If it works, we should get a bunch of nonsense printed to the output
 talking about writing temporary files on your computer. There’s also a
 few automated tests that check whether everything is formatted properly,
@@ -249,19 +134,14 @@ a temporary file on your computer, and then using that dataset to find
 marker genes that distinguish the classes. It does this for each of the
 possible pairs of cell classes you could create.</p>
 <p>We’ll also get all the marker genes that distinguish each pair of
-cell classes! Let’s take a look at the output, stored in the
-marker_genes variable. Write the following to explore the output and
-then read on ahead for more info.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">marker_genes</span><span class="op">)</span>, max.level <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p>Since Lionmap works on a hierarchy, we have a rootnode (the common
-node from which all cell types descend). That’s what the list at the
-highest level is named for. And at each subsequent level, we have a
-sublist with marker genes that distinguish two cell classes (ex:
-MemoryCD4T vs B). We see this for all the matchups.</p>
+cell classes! Let’s take a look at the output for the first 5 matchups,
+stored in the marker_genes variable. Write the following to explore the
+output and then read on ahead for more info.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">marker_genes</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <p>Now we can use this set of marker genes to create our list of
 models!</p>
-<p>Let’s use the <strong>GetModels</strong> function to do this.</p>
+<p>We will use the <strong>GetModels</strong> function to do this.</p>
 <p>Just like before, we’ll need to input the following info, just with
 the addition of the marker gene list we just created:</p>
 <ol style="list-style-type: decimal">
@@ -284,24 +164,23 @@ parameter which lets us change the models we’re creating (should only be
 used by more advanced users), and the <strong>npcs</strong> parameter,
 which changes the number of principal components used when creating
 models.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/GetModels.html">GetModels</a></span><span class="op">(</span>marker_genes <span class="op">=</span> <span class="va">marker_genes</span>, ref_bpcells <span class="op">=</span> <span class="va">train_ge_bpcells</span>, ref_metadata <span class="op">=</span> <span class="va">train_metadata</span>, tree <span class="op">=</span> <span class="va">equal_tree</span>, metadata_cluster_column <span class="op">=</span> <span class="st">"seurat_annotations"</span>, metadata_cell_label_column <span class="op">=</span> <span class="st">"cell_label"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/GetModels.html">GetModels</a></span><span class="op">(</span>marker_genes <span class="op">=</span> <span class="va">marker_genes</span>, ref_bpcells <span class="op">=</span> <span class="va">train_ex_data_bpcells</span>, ref_metadata <span class="op">=</span> <span class="va">train_ex_metadata</span>, tree <span class="op">=</span> <span class="va">equal_tree</span>, metadata_cluster_column <span class="op">=</span> <span class="st">"seurat_annotations"</span>, metadata_cell_label_column <span class="op">=</span> <span class="st">"cell_label"</span><span class="op">)</span></span></code></pre></div>
 <p>If everything goes well, the output will indicate the tests checking
 proper formatting passed, and will then list the models as they are
 being created.</p>
-<p>Let’s have a look at the structure of the list with the str function
-(if you’re using Rstudio)</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">models</span>, max.level <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p>Let’s have a look at the structure of the list with the str
+function:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">models</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>, max.level <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p>The structure of this object, just like the marker genes, is a list
 of lists. Each sublist provides models that can be used to classify a
 cell between one of two classes, and we have models that differentiate
 all possible classes at each level of the celltype hierarchy
 (equal_tree). It also contains information on how to transform data we
 want to classify to be in the same PC-space as the models we just
-created (if that didn’t mean anything to you, don’t worry, it’s just
-something about properly formatting the data). We’ll use all these
-models in the next step, to classify cells to specific celltypes.</p>
+created. We’ll use all these models in the next step, to classify cells
+to specific celltypes.</p>
 <p>To classify cells to previously defined celltypes, we’ll use the
 Classify function and will need to enter the following:</p>
 <ol style="list-style-type: decimal">
@@ -316,16 +195,16 @@ allows us to set the confidence threshold we need to have in order to
 classify a cell.</p>
 <p>The output is a vector giving the celltype classifications for each
 cell in the query dataset.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">query_classifications</span> <span class="op">=</span> <span class="fu"><a href="../reference/Classify.html">Classify</a></span><span class="op">(</span>bpcells_query <span class="op">=</span> <span class="va">test_ge_bpcells</span>,models <span class="op">=</span> <span class="va">models</span>,tree_struc <span class="op">=</span> <span class="va">equal_tree</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">query_classifications</span> <span class="op">=</span> <span class="fu"><a href="../reference/Classify.html">Classify</a></span><span class="op">(</span>bpcells_query <span class="op">=</span> <span class="va">test_ex_data_bpcells</span>,models <span class="op">=</span> <span class="va">models</span>,tree_struc <span class="op">=</span> <span class="va">equal_tree</span><span class="op">)</span></span></code></pre></div>
 <p>Awesome! Now we have a vector of classifications, formatted so the
 name of each element is the cell label and the value is the
 classification of that cell. Let’s view the first few elements.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">query_classifications</span><span class="op">)</span></span></code></pre></div>
 <p>We can view the number of classifications to each type using the
 table function.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">query_classifications</span><span class="op">)</span></span></code></pre></div>
 <p>We’ll see that one cell has the classification “Rootnode”. This
 indicates that there wasn’t enough evidence to properly classify the

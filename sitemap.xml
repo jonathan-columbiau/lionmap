@@ -16,6 +16,9 @@
     <loc>https://jonathan-columbiau.github.io/lionmap/articles/index.html</loc>
   </url>
   <url>
+    <loc>https://jonathan-columbiau.github.io/lionmap/articles/seurat_obj_vignette.html</loc>
+  </url>
+  <url>
     <loc>https://jonathan-columbiau.github.io/lionmap/articles/tree_vignette.html</loc>
   </url>
   <url>
@@ -53,9 +56,6 @@
   </url>
   <url>
     <loc>https://jonathan-columbiau.github.io/lionmap/reference/LoadBPCellsObjToSeurat.html</loc>
-  </url>
-  <url>
-    <loc>https://jonathan-columbiau.github.io/lionmap/reference/WriteSeuratToBPCellsDir.html</loc>
   </url>
   <url>
     <loc>https://jonathan-columbiau.github.io/lionmap/reference/binomial_elastic_net.html</loc>
