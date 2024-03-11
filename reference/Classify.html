@@ -95,8 +95,27 @@ Unit test 2: expected number of elements returned</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">Classify</span><span class="op">(</span><span class="va">query_obj</span>, <span class="va">models</span>, <span class="va">tree</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'tree' not found</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"train_ex_data_bpcells"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"train_ex_metadata"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"test_ex_data_bpcells"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"test_ex_metadata"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">possible_cell_classes</span> <span class="op">=</span> <span class="va">train_ex_metadata</span><span class="op">$</span><span class="va">seurat_annotations</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">equal_tree</span> <span class="op">=</span> <span class="fu"><a href="CreateEqualTree.html">CreateEqualTree</a></span><span class="op">(</span>cell_labels <span class="op">=</span> <span class="va">possible_cell_classes</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">marker_genes</span> <span class="op">=</span> <span class="fu"><a href="FindMarkerGenes.html">FindMarkerGenes</a></span><span class="op">(</span>ref_bpcells <span class="op">=</span> <span class="va">train_ex_data_bpcells</span>, ref_metadata <span class="op">=</span> <span class="va">train_ex_metadata</span>, tree <span class="op">=</span> <span class="va">equal_tree</span>, metadata_cluster_column <span class="op">=</span> <span class="st">"seurat_annotations"</span>, metadata_cell_label_column <span class="op">=</span> <span class="st">"cell_label"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Test passed</span> 🥇</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Test passed</span> 🎊</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Test passed</span> 🌈</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Test passed</span> 🎊</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Test passed</span> 🥇</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called ‘BPCells’</span>
+<span class="r-in"><span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="GetModels.html">GetModels</a></span><span class="op">(</span>marker_genes <span class="op">=</span> <span class="va">marker_genes</span>, ref_bpcells <span class="op">=</span> <span class="va">train_ex_data_bpcells</span>, ref_metadata <span class="op">=</span> <span class="va">train_ex_metadata</span>, tree <span class="op">=</span> <span class="va">equal_tree</span>, metadata_cluster_column <span class="op">=</span> <span class="st">"seurat_annotations"</span>, metadata_cell_label_column <span class="op">=</span> <span class="st">"cell_label"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Test passed</span> 🎉</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called ‘BPCells’</span>
+<span class="r-in"><span><span class="va">query_classifications</span> <span class="op">=</span> <span class="fu">Classify</span><span class="op">(</span>bpcells_query <span class="op">=</span> <span class="va">test_ex_data_bpcells</span>,models <span class="op">=</span> <span class="va">models</span>,tree_struc <span class="op">=</span> <span class="va">equal_tree</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod("rootnode"):</span> no applicable method for 'rootnode' applied to an object of class "treedata"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
