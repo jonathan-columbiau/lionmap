@@ -5,7 +5,7 @@
 \title{Create Hierarchical Tree Structure from CSV with parent and child nodes
 named in a csv file}
 \usage{
-CreateHierarchy(csv_file_path)
+CreateHierarchy(csv_file_path = NULL, df_hierarchy = NULL)
 }
 \arguments{
 \item{csv_file_path}{A CSV file path with a column named 'parent' and a column
@@ -20,5 +20,16 @@ Create Hierarchical Tree Structure from CSV with parent and child nodes
 named in a csv file
 }
 \examples{
-CreateHierarchy("x.csv")
+tree_df = data.frame(
+parent = c("p1","p1","p1","p1","p1",
+           "p2","p2","p2","p2","p2","p3","p3","p3","p3","p3",
+           "p4","p4","p4","p4","p4","gp1","gp1","gp2",
+           "gp2","rootnode","rootnode","rootnode"),
+node = c("n1","n2","n3","n4","n5",
+         "n6","n7","n8","n9","n10","n11","n12","n13","n14",
+         "n15","n16","n17","n18","n19","n20","p1","p2",
+         "p3","p4","gp1","gp2","rootnode")
+)
+
+new_hierarchy = CreateHierarchy(csv_file_path = NULL, df_hierarchy = tree_df)
 }

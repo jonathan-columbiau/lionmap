@@ -45,5 +45,11 @@ identifies marker genes by using a function provided in the BPCells package,
 marker_features, which finds genes using the Wilcoxon test.
 }
 \examples{
-FindMarkerGenes(ref_bpcells, ref_metadata)
+data("train_ex_data_bpcells")
+data("train_ex_metadata")
+data("test_ex_data_bpcells")
+data("test_ex_metadata")
+possible_cell_classes = train_ex_metadata$seurat_annotations \%>\% unique()
+equal_tree = CreateEqualTree(cell_labels = possible_cell_classes)
+marker_genes = FindMarkerGenes(ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
 }

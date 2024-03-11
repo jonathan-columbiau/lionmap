@@ -21,5 +21,5 @@ This function is meant for users who don't want to use the tree-based/hierarchic
 It creates a tree that assumes that all the celltype labels are at the same level of the tree.
 }
 \examples{
-CreateEqualTree(celltype_labels)
+equal_tree = lionmap::CreateEqualTree(cell_labels = paste0(1:20,"n"),rootnode_name = "Root")
 }

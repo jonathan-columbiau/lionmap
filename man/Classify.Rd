@@ -27,5 +27,16 @@ Classification function that takes in input dataset (in BPCells format), alongsi
 created models and the tree structure and provides a vector of classifications.
 }
 \examples{
-Classify(query_obj, models, tree)
+data("train_ex_data_bpcells")
+data("train_ex_metadata")
+data("test_ex_data_bpcells")
+data("test_ex_metadata")
+possible_cell_classes = train_ex_metadata$seurat_annotations \%>\% unique()
+equal_tree = CreateEqualTree(cell_labels = possible_cell_classes)
+marker_genes = FindMarkerGenes(ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
+models <- GetModels(marker_genes = marker_genes, ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
+query_classifications = Classify(bpcells_query = test_ex_data_bpcells,models = models,tree_struc = equal_tree)
+
+
+
 }
