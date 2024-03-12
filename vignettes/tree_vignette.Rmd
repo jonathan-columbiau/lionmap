@@ -8,7 +8,7 @@ vignette: >
 ---
 
 ```{r setup, echo=FALSE}
-knitr::opts_chunk$set(eval = FALSE)
+knitr::opts_chunk$set(eval = TRUE)
 ```
 
 **What is a Hierarchy (aka Tree)?**
@@ -33,10 +33,14 @@ Number of comparisons = n(n-1) / 2
 
 As an example, let's take a cell and say it can be classified into one of twenty possible celltypes. Let's say we don't use a hierarchy, and consider each element as equally likely to occur. To get a classification we'll need to perform 20\*(20 - 1) / 2 = 190 comparisons.
 
-```{r}
+```{r include=FALSE}
 library(ggtree)
 library(lionmap)
 library(tibble)
+
+```
+
+```{r}
 equal_tree = lionmap::CreateEqualTree(cell_labels = paste0(1:20,"n"),rootnode_name = "Root")
 ggtree(equal_tree) +geom_nodelab(geom = "label", node = "all") 
 
