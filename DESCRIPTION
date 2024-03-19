@@ -29,6 +29,7 @@ Imports:
     tidyr,
     tidytree
 Suggests: 
+    kableExtra,
     ggplot2,
     ggtree,
     knitr,
