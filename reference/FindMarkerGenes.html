@@ -80,7 +80,7 @@ marker_features, which finds genes using the Wilcoxon test.</p>
 <span>  <span class="va">tree</span>,</span>
 <span>  n_genes <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  metadata_cluster_column <span class="op">=</span> <span class="st">"cell_type"</span>,</span>
-<span>  metadata_cell_label_column <span class="op">=</span> <span class="st">"cellid"</span>,</span>
+<span>  metadata_cell_id_column <span class="op">=</span> <span class="st">"cellid"</span>,</span>
 <span>  n_cells_sampled <span class="op">=</span> <span class="fl">500</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -109,7 +109,7 @@ that distinguish pairs of classes at each level of the hierarchy.</p></dd>
 <dd><p>The name of the column in the metadata giving the celltype labels.</p></dd>
 
 
-<dt>metadata_cell_label_column</dt>
+<dt>metadata_cell_id_column</dt>
 <dd><p>The name of the column in the metadata giving the cell IDs.</p></dd>
 
 
@@ -133,12 +133,13 @@ level of the hierarchy in the tree you provided.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"test_ex_metadata"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">possible_cell_classes</span> <span class="op">=</span> <span class="va">train_ex_metadata</span><span class="op">$</span><span class="va">seurat_annotations</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">equal_tree</span> <span class="op">=</span> <span class="fu"><a href="CreateEqualTree.html">CreateEqualTree</a></span><span class="op">(</span>cell_labels <span class="op">=</span> <span class="va">possible_cell_classes</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">marker_genes</span> <span class="op">=</span> <span class="fu">FindMarkerGenes</span><span class="op">(</span>ref_bpcells <span class="op">=</span> <span class="va">train_ex_data_bpcells</span>, ref_metadata <span class="op">=</span> <span class="va">train_ex_metadata</span>, tree <span class="op">=</span> <span class="va">equal_tree</span>, metadata_cluster_column <span class="op">=</span> <span class="st">"seurat_annotations"</span>, metadata_cell_label_column <span class="op">=</span> <span class="st">"cell_label"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Test passed</span> 🎊</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Test passed</span> 🎊</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod("as.treedata"):</span> no applicable method for 'as.treedata' applied to an object of class "c('tbl_df', 'tbl', 'data.frame')"</span>
+<span class="r-in"><span><span class="va">marker_genes</span> <span class="op">=</span> <span class="fu">FindMarkerGenes</span><span class="op">(</span>ref_bpcells <span class="op">=</span> <span class="va">train_ex_data_bpcells</span>, ref_metadata <span class="op">=</span> <span class="va">train_ex_metadata</span>, tree <span class="op">=</span> <span class="va">equal_tree</span>, metadata_cluster_column <span class="op">=</span> <span class="st">"seurat_annotations"</span>, metadata_cell_id_column <span class="op">=</span> <span class="st">"cell_label"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Test passed</span> 🥇</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Test passed</span> 🎊</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Test passed</span> 🌈</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Test passed</span> 🎉</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Test passed</span> 🎊</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Test passed</span> 🥇</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called ‘BPCells’</span>
 </code></pre></div>
     </div>

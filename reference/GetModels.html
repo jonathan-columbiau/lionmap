@@ -62,7 +62,7 @@
 <span>  <span class="va">ref_metadata</span>,</span>
 <span>  <span class="va">tree</span>,</span>
 <span>  metadata_cluster_column <span class="op">=</span> <span class="st">"cluster_label"</span>,</span>
-<span>  metadata_cell_label_column <span class="op">=</span> <span class="st">"cell_label"</span>,</span>
+<span>  metadata_cell_id_column <span class="op">=</span> <span class="st">"cell_label"</span>,</span>
 <span>  n_cells_sampled <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  models_to_include <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  npcs <span class="op">=</span> <span class="fl">5</span></span>
@@ -91,7 +91,7 @@
 <dd><p>Metadata celltype label column.</p></dd>
 
 
-<dt>metadata_cell_label_column</dt>
+<dt>metadata_cell_id_column</dt>
 <dd><p>Metadata cell ID column</p></dd>
 
 
@@ -121,13 +121,13 @@ this parameter, include a subset of the following (make sure the names match or 
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">GetModels</span><span class="op">(</span><span class="va">marker_genes</span>, <span class="va">ref_bpcells</span>, <span class="va">ref_metadata</span>, <span class="va">tree</span>,</span></span>
 <span class="r-in"><span>metadata_cluster_column <span class="op">=</span> <span class="st">"cluster_label"</span>,</span></span>
-<span class="r-in"><span>metadata_cell_label_column <span class="op">=</span> <span class="st">"cell_label"</span>,</span></span>
+<span class="r-in"><span>metadata_cell_id_column <span class="op">=</span> <span class="st">"cell_label"</span>,</span></span>
 <span class="r-in"><span>n_cells_sampled <span class="op">=</span> <span class="fl">500</span>, models_to_include <span class="op">=</span> <span class="cn">NULL</span>, npcs <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ── <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">: ref_metadata is a dataframe (not a tibble)</span> ───────────────────────────</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Error in `eval(expr, envir, enclos)`: object 'ref_metadata' not found</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Backtrace:</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">    </span>▆</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 1. </span>├─<span style="font-weight: bold;">testthat</span>::expect_true(is.data.frame(ref_metadata) &amp; !dplyr::is.tbl(ref_metadata))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 1. </span>├─<span style="font-weight: bold;">testthat</span>::expect_true(is.data.frame(ref_metadata) &amp; !is.tbl(ref_metadata))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 2. </span>│ └─testthat::quasi_label(enquo(object), label, arg = "object")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 3. </span>│   └─<span style="font-weight: bold;">rlang</span>::eval_bare(expr, quo_get_env(quo))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 4. </span>└─<span style="font-weight: bold;">base</span>::is.data.frame(ref_metadata)</span>
