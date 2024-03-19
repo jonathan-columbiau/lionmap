@@ -10,11 +10,26 @@
 #' that distinguish pairs of classes at each level of the hierarchy.
 #' @param n_genes Number of marker genes, per pairwise class, you want to find.
 #' @param metadata_cluster_column The name of the column in the metadata giving the celltype labels.
-#' @param metadata_cell_label_column The name of the column in the metadata giving the cell IDs.
+#' @param metadata_cell_id_column The name of the column in the metadata giving the cell IDs.
 #' @param n_cells_sampled Number of cells per class used to find marker genes.
 #'
 #' @return A list providing marker genes that distinguish each pairwise combination of celltypes, at each
 #' level of the hierarchy in the tree you provided.
+#'
+#' @importFrom tidytree child
+#' @importFrom tidytree nodelab
+#' @importFrom testthat test_that
+#' @importFrom testthat expect_true
+#' @importFrom testthat expect_equal
+#' @importFrom tidytree offspring
+#' @importFrom dplyr filter
+#' @importFrom dplyr select
+#' @importFrom dplyr distinct
+#' @importFrom dplyr mutate
+#' @importFrom dplyr pull
+#' @importFrom dplyr slice_max
+#' @importFrom dplyr arrange
+#' @importFrom dplyr is.tbl
 #' @export
 #'
 #' @examples
@@ -24,34 +39,34 @@
 #' data("test_ex_metadata")
 #' possible_cell_classes = train_ex_metadata$seurat_annotations %>% unique()
 #' equal_tree = CreateEqualTree(cell_labels = possible_cell_classes)
-#' marker_genes = FindMarkerGenes(ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
-FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metadata_cluster_column = "cell_type", metadata_cell_label_column = "cellid",n_cells_sampled = 500) {
+#' marker_genes = FindMarkerGenes(ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_id_column = "cell_label")
+FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metadata_cluster_column = "cell_type", metadata_cell_id_column = "cellid",n_cells_sampled = 500) {
 
   #unit test: ref_metadata is a dataframe
-  testthat::test_that("ref_metadata is a dataframe (not a tibble)", {
+  test_that("ref_metadata is a dataframe (not a tibble)", {
     # Assuming ref_metadata is defined in your environment
-    testthat::expect_true(is.data.frame(ref_metadata) & ! dplyr::is.tbl(ref_metadata))
+    expect_true(is.data.frame(ref_metadata) & ! is.tbl(ref_metadata))
   })
-  testthat::test_that("The cluster column is in the metadata", {
+  test_that("The cluster column is in the metadata", {
     # Assuming ref_metadata is defined in your environment
-    testthat::expect_true(metadata_cluster_column %in% colnames(ref_metadata))
-  })
-
-  testthat::test_that("The cell label column is in the metadata", {
-    # Assuming ref_metadata is defined in your environment
-    testthat::expect_true(metadata_cell_label_column %in% colnames(ref_metadata))
+    expect_true(metadata_cluster_column %in% colnames(ref_metadata))
   })
 
-  testthat::test_that("None of the cell types have any spaces in their names (one of the requirements of using Lionmap) ", {
+  test_that("The cell label column is in the metadata", {
     # Assuming ref_metadata is defined in your environment
-    testthat::expect_true(all(!grepl(" ",unique(ref_metadata[,metadata_cell_label_column]))))
+    expect_true(metadata_cell_id_column %in% colnames(ref_metadata))
+  })
+
+  test_that("None of the cell types have any spaces in their names (one of the requirements of using Lionmap) ", {
+    # Assuming ref_metadata is defined in your environment
+    expect_true(all(!grepl(" ",unique(ref_metadata[,metadata_cell_id_column]))))
   })
 
 
 
   #Unit test 1: ref_bpcells is a bpcells object - else throw error
-  testthat::test_that("ref_bpcells param is a bpcells object", {
-    testthat::expect_equal(class(ref_bpcells) %>% attr("package"),"BPCells")
+  test_that("ref_bpcells param is a bpcells object", {
+    expect_equal(class(ref_bpcells) %>% attr("package"),"BPCells")
   })
   #1) Normalize reference atlas.
   # Normalize by reads-per-cell
@@ -62,8 +77,8 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
   internal_nodes <- tree@phylo$node.label
   direct_child_nodes <- vector(mode = "list", length = length(internal_nodes))
   for (i in 1:length(internal_nodes)) {
-    child_node_number_ids <- treeio::child(tree, internal_nodes[i])
-    child_node_labels <- treeio::nodelab(tree, id = child_node_number_ids)
+    child_node_number_ids <- child(tree, internal_nodes[i])
+    child_node_labels <- nodelab(tree, id = child_node_number_ids)
     direct_child_nodes[[i]] <- child_node_labels
   }
   names(direct_child_nodes) <- internal_nodes
@@ -83,7 +98,7 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
 
   } else {
     for (i in 1:length(child_node_labels)) {
-      descendant_tip_nodes[[i]] <- treeio::offspring(tree,child_node_labels[i], type = "tips") %>% nodelab(tree,.)
+      descendant_tip_nodes[[i]] <- offspring(tree,child_node_labels[i], type = "tips") %>% nodelab(tree,.)
     }
     #remove tip nodes from the above list of lists (they don't have any children nodes so their positions will have a length of 0)
     descendant_tip_nodes <- descendant_tip_nodes[lapply(descendant_tip_nodes,length)>0]
@@ -115,8 +130,8 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
       list_with_matchups[[j]] <- list("compared_nodes" = compared_nodes)
       names(list_with_matchups)[j] <- paste0(node1, " vs ", node2)
       #match colnames with class
-      cells_node_1 <- ref_metadata[ref_metadata[,metadata_cluster_column] %in% c(node1_tip_nodes),metadata_cell_label_column]
-      cells_node_2 <- ref_metadata[ref_metadata[,metadata_cluster_column] %in% c(node2_tip_nodes),metadata_cell_label_column]
+      cells_node_1 <- ref_metadata[ref_metadata[,metadata_cluster_column] %in% c(node1_tip_nodes),metadata_cell_id_column]
+      cells_node_2 <- ref_metadata[ref_metadata[,metadata_cluster_column] %in% c(node2_tip_nodes),metadata_cell_id_column]
       #sample cells
       if(length(cells_node_1) > n_cells_sampled) {
         cells_node_1 <- cells_node_1 %>% sample(n_cells_sampled)
@@ -129,10 +144,10 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
       celltype_labels <- c(rep(node1, length(cells_node_1)), rep(node2, length(cells_node_2))) %>% as.factor()
       pairwise_markers <- BPCells::marker_features(subset_atlas, celltype_labels, method = "wilcoxon")
       #remove genes with less than .5 logCPM in either class
-      pairwise_markers %<>% dplyr::filter(foreground_mean > .5 |background_mean > .5) %>% dplyr::select(-background) %>% dplyr::distinct(feature, .keep_all = TRUE) %>% dplyr::mutate(log2_fc = log2(foreground_mean/background_mean))
+      pairwise_markers %<>% filter(foreground_mean > .5 |background_mean > .5) %>% select(-background) %>% distinct(feature, .keep_all = TRUE) %>% mutate(log2_fc = log2(foreground_mean/background_mean))
 
       #get log2fc, and select the top marker genes with the highest abs value log2fc
-      pairwise_markers %<>% dplyr::mutate(abs_log2_fc = log2(foreground_mean/background_mean) %>% abs()) %>% dplyr::arrange(abs_log2_fc) %>% dplyr::slice_max(abs_log2_fc, n = n_genes) %>% dplyr::pull(feature)
+      pairwise_markers %<>% mutate(abs_log2_fc = log2(foreground_mean/background_mean) %>% abs()) %>% arrange(abs_log2_fc) %>% slice_max(abs_log2_fc, n = n_genes) %>% pull(feature)
       list_with_matchups[[j]] <- c(list_with_matchups[[j]],list(marker_genes = pairwise_markers))
 
     }

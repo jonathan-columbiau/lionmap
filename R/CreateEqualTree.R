@@ -12,6 +12,6 @@
 #' @examples
 #' equal_tree = lionmap::CreateEqualTree(cell_labels = paste0(1:20,"n"),rootnode_name = "Root")
 CreateEqualTree <- function(cell_labels, rootnode_name = "Rootnode") {
-  tree_newick_format <- paste0("(",stringr::str_c(unique(na.omit(cell_labels)), collapse = ","),")",rootnode_name,";") %>% .[!is.na(.)]
-  treeio::read.newick(textConnection(tree_newick_format), node.label = "label") %>% treeio::as.treedata()
+  CreateHierarchy(df_hierarchy = data.frame(parent = rootnode_name,
+                                            node = cell_labels))
 }

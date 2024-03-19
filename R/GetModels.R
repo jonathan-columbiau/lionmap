@@ -5,7 +5,7 @@
 #' @param ref_metadata Dataframe with metadata on each cell in reference dataset.
 #' @param tree Tree structure in treedata format.
 #' @param metadata_cluster_column Metadata celltype label column.
-#' @param metadata_cell_label_column Metadata cell ID column
+#' @param metadata_cell_id_column Metadata cell ID column
 #' @param n_cells_sampled Number of cells used in pairwise model determination for each class.
 #' @param models_to_include Optional vector which provides the names of models to include. If using
 #' this parameter, include a subset of the following (make sure the names match or it won't work):
@@ -14,18 +14,25 @@
 #' @param npcs Optional parameter giving number of PCs to use in model creation.
 #'
 #' @return List of models that differentiates each pairwise matchup.
+#' @importFrom testthat test_that
+#' @importFrom testthat expect_true
+#' @importFrom dplyr is.tbl
+#' @importFrom testthat expect_equal
+#' @importFrom tidytree tip.label
+#' @importFrom tidytree offspring
+#' @importFrom tidytree nodelab
 #' @export
 #'
 #' @examples
 #' GetModels(marker_genes, ref_bpcells, ref_metadata, tree,
 #' metadata_cluster_column = "cluster_label",
-#' metadata_cell_label_column = "cell_label",
+#' metadata_cell_id_column = "cell_label",
 #' n_cells_sampled = 500, models_to_include = NULL, npcs = 5)
-GetModels <- function(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cluster_column = "cluster_label", metadata_cell_label_column = "cell_label", n_cells_sampled = 500, models_to_include = NULL, npcs = 5) {
+GetModels <- function(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cluster_column = "cluster_label", metadata_cell_id_column = "cell_label", n_cells_sampled = 500, models_to_include = NULL, npcs = 5) {
   #unit test: ref_metadata is a dataframe
-  testthat::test_that("ref_metadata is a dataframe (not a tibble)", {
+  test_that("ref_metadata is a dataframe (not a tibble)", {
     # Assuming ref_metadata is defined in your environment
-    testthat::expect_true(is.data.frame(ref_metadata) & ! dplyr::is.tbl(ref_metadata))
+    expect_true(is.data.frame(ref_metadata) & ! is.tbl(ref_metadata))
   })
 
   #1) Normalize reference atlas.
@@ -42,7 +49,7 @@ GetModels <- function(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cl
   }
 
   #get list of tipnodes
-  tipnodes <- tidytree::tip.label(tree)
+  tipnodes <- tip.label(tree)
   ref_bpcells %<>% BPCells::t()
   for (i in 1:length(marker_genes)) {  #Iterate through parent nodes
     for (j in 1:length(marker_genes[[i]])) { ##2) Iterate through matchups
@@ -52,17 +59,17 @@ GetModels <- function(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cl
       if(node1 %in% tipnodes) {
         node1_tip_nodes <- node1
       } else{
-        node1_tip_nodes <- tree %>% tidytree::offspring(node1, type = "tips") %>% tidytree::nodelab(tree,.)
+        node1_tip_nodes <- tree %>% offspring(node1, type = "tips") %>% nodelab(tree,.)
       }
       if(node2 %in% tipnodes) {
         node2_tip_nodes <- node2
       } else {
-        node2_tip_nodes <- tree %>%  tidytree::offspring(node2, type = "tips") %>%  tidytree::nodelab(tree,.)
+        node2_tip_nodes <- tree %>%  offspring(node2, type = "tips") %>% nodelab(tree,.)
       }
 
       #if on tip node
-      cells_node_1 <- ref_metadata[ref_metadata[,metadata_cluster_column] %in% c(node1_tip_nodes),metadata_cell_label_column]
-      cells_node_2 <- ref_metadata[ref_metadata[,metadata_cluster_column] %in% c(node2_tip_nodes),metadata_cell_label_column]
+      cells_node_1 <- ref_metadata[ref_metadata[,metadata_cluster_column] %in% c(node1_tip_nodes),metadata_cell_id_column]
+      cells_node_2 <- ref_metadata[ref_metadata[,metadata_cluster_column] %in% c(node2_tip_nodes),metadata_cell_id_column]
 
       matchup_marker_genes <- marker_genes[[i]][[j]]$marker_genes
       #subset to only have particular genes and cells. Cells are ordered on whether they're from cell 1 or cell 2.
@@ -91,8 +98,8 @@ GetModels <- function(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cl
 
       #Unit test 1:
       if (i ==1 & j ==1) {
-        testthat::test_that("Same Number rows in pca-transformed matrix as number of cells in each class for 1st matchup in 1st class", {
-          testthat::expect_equal(marker_ge_pca$x %>% nrow(), length(cells_node_1) + length(cells_node_2))
+        test_that("Same Number rows in pca-transformed matrix as number of cells in each class for 1st matchup in 1st class", {
+          expect_equal(marker_ge_pca$x %>% nrow(), length(cells_node_1) + length(cells_node_2))
         })
       }
 

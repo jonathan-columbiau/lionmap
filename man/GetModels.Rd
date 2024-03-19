@@ -10,7 +10,7 @@ GetModels(
   ref_metadata,
   tree,
   metadata_cluster_column = "cluster_label",
-  metadata_cell_label_column = "cell_label",
+  metadata_cell_id_column = "cell_label",
   n_cells_sampled = 500,
   models_to_include = NULL,
   npcs = 5
@@ -27,7 +27,7 @@ GetModels(
 
 \item{metadata_cluster_column}{Metadata celltype label column.}
 
-\item{metadata_cell_label_column}{Metadata cell ID column}
+\item{metadata_cell_id_column}{Metadata cell ID column}
 
 \item{n_cells_sampled}{Number of cells used in pairwise model determination for each class.}
 
@@ -47,6 +47,6 @@ Function that gives models trained to differentiate all pairwise matchups.
 \examples{
 GetModels(marker_genes, ref_bpcells, ref_metadata, tree,
 metadata_cluster_column = "cluster_label",
-metadata_cell_label_column = "cell_label",
+metadata_cell_id_column = "cell_label",
 n_cells_sampled = 500, models_to_include = NULL, npcs = 5)
 }

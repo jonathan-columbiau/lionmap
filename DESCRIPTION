@@ -1,18 +1,17 @@
 Package: lionmap
-Title: lionmap: tree-based single cell classification with algorithmic updates
+Title: lionmap: tree-based single cell classification with algorithmic
+    updates
 Version: 0.0.0.9000
 Authors@R: 
     person("Jonathan", "Algoo", , "ja3527@cumc.columbia.edu", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: This package performs consensus classification on single cell 
+Description: This package performs consensus classification on single cell
     datasets. Components are modular, and can be used standalone.
 License: MIT + file LICENSE
-Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
-biocViews:
+URL: https://github.com/jonathan-columbiau/lionmap,
+    https://jonathan-columbiau.github.io/lionmap/
+BugReports: https://github.com/jonathan-columbiau/lionmap/issues
 Depends: 
-    plyr,
     caret,
     data.tree,
     e1071,
@@ -20,26 +19,29 @@ Depends:
     magrittr,
     MASS,
     Matrix,
+    plyr,
     ranger,
     stats,
     stringr,
-    testthat,
-    treeio
+    testthat
 Imports:
-  dplyr,
-  tidyr
+    dplyr,
+    tidyr,
+    tidytree
+Suggests: 
+    ggplot2,
+    ggtree,
+    knitr,
+    rmarkdown,
+    Seurat,
+    SeuratObject
+VignetteBuilder: 
+    knitr
 Remotes: 
     bnprks/BPCells,
     satijalab/seurat-data
-URL: https://github.com/jonathan-columbiau/lionmap, https://jonathan-columbiau.github.io/lionmap/
-BugReports: https://github.com/jonathan-columbiau/lionmap/issues
-Suggests: 
-    knitr,
-    rmarkdown,
-    tidytree,
-    SeuratObject,
-    ggtree,
-    Seurat,
-    ggplot2
-VignetteBuilder: knitr
+biocViews:
+Encoding: UTF-8
 LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1

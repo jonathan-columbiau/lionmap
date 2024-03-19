@@ -13,7 +13,7 @@ FindMarkerGenes(
   tree,
   n_genes = 50,
   metadata_cluster_column = "cell_type",
-  metadata_cell_label_column = "cellid",
+  metadata_cell_id_column = "cellid",
   n_cells_sampled = 500
 )
 }
@@ -30,7 +30,7 @@ that distinguish pairs of classes at each level of the hierarchy.}
 
 \item{metadata_cluster_column}{The name of the column in the metadata giving the celltype labels.}
 
-\item{metadata_cell_label_column}{The name of the column in the metadata giving the cell IDs.}
+\item{metadata_cell_id_column}{The name of the column in the metadata giving the cell IDs.}
 
 \item{n_cells_sampled}{Number of cells per class used to find marker genes.}
 }
@@ -51,5 +51,5 @@ data("test_ex_data_bpcells")
 data("test_ex_metadata")
 possible_cell_classes = train_ex_metadata$seurat_annotations \%>\% unique()
 equal_tree = CreateEqualTree(cell_labels = possible_cell_classes)
-marker_genes = FindMarkerGenes(ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
+marker_genes = FindMarkerGenes(ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_id_column = "cell_label")
 }

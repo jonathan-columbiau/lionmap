@@ -7,6 +7,10 @@
 #' This info will be used to create the tree.
 #'
 #' @return a treedata object
+#'
+#' @importFrom dplyr select
+#' @importFrom tibble as_tibble
+#' @importFrom tidytree as.treedata
 #' @export
 #'
 #' @examples tree_df = data.frame(
@@ -35,7 +39,7 @@ CreateHierarchy <- function(csv_file_path = NULL, df_hierarchy = NULL) {
     tree_tbl$trait = NA
 
     # Convert the data frame to a tibble
-    tree_tbl <- tree_tbl %>% tibble::as_tibble() %>% dplyr::select(node, parent, branch_length, trait)
+    tree_tbl <- tree_tbl %>% as_tibble() %>% select(node, parent, branch_length, trait)
 
     # Convert the tibble to a treedata object
     tree_tidy = as.treedata(tree_tbl)
@@ -45,7 +49,7 @@ CreateHierarchy <- function(csv_file_path = NULL, df_hierarchy = NULL) {
     tree_tbl <- df_hierarchy %>% as_tibble()
     tree_tbl$branch_length = NA
     tree_tbl$trait = NA
-    tree_tbl <- tree_tbl %>% dplyr::select(node, parent, branch_length, trait)
+    tree_tbl <- tree_tbl %>% select(node, parent, branch_length, trait)
     tree_tidy = as.treedata(tree_tbl)
     return(tree_tidy)
   }

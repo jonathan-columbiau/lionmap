@@ -61,7 +61,7 @@ following info:
     (**metadata_cluster_column**)
 
 5.  The name of the column in the metadata giving the cell ID
-    (**metadata_cell_label_column**)
+    (**metadata_cell_id_column**)
 
 And optionally we can change the **ngenes** parameter, which allows us
 to choose the number of genes we find that distinguishes each pair of
@@ -70,7 +70,7 @@ us to choose the number of cells we sample to find differences for each
 particular pair of celltypes.
 
 ```{r}
-marker_genes = FindMarkerGenes(ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
+marker_genes = FindMarkerGenes(ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_id_column = "cell_label")
 ```
 
 If it works, we should get a bunch of nonsense printed to the output
@@ -111,7 +111,7 @@ addition of the marker gene list we just created:
     (**metadata_cluster_column**)
 
 6.  The name of the column in the metadata giving the cell ID
-    (**metadata_cell_label_column**)
+    (**metadata_cell_id_column**)
 
 And for this function we can optionally change the **n_cells_sampled**
 parameter, which is the number of cells sampled from each celltype to
@@ -122,7 +122,7 @@ we're creating (should only be used by more advanced users), and the
 used when creating models.
 
 ```{r}
-models <- GetModels(marker_genes = marker_genes, ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
+models <- GetModels(marker_genes = marker_genes, ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_id_column = "cell_label")
 
 ```
 
