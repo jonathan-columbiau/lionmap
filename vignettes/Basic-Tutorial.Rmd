@@ -21,6 +21,8 @@ knitr::opts_chunk$set(
 Let's load the data we'll use for the package.
 
 ```{r}
+library(lionmap)
+library(magrittr)
 data("train_ex_data_bpcells")
 data("train_ex_metadata")
 data("test_ex_data_bpcells")

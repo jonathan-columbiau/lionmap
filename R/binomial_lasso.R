@@ -5,7 +5,7 @@
 #'
 #' @return Binomial lasso model trained on evenly split dataset (upsamples if classes aren't evenly split)
 #' @importFrom caret upSample
-#' @importFrom glmet cv.glmnet
+#' @importFrom glmnet cv.glmnet
 #' @keywords internal
 #'
 #' @examples

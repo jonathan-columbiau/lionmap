@@ -36,13 +36,12 @@ As an example, let's take a cell and say it can be classified into one of twenty
 ```{r include=FALSE}
 library(ggtree)
 library(lionmap)
-library(tibble)
 
 ```
 
 ```{r}
-equal_tree = lionmap::CreateEqualTree(cell_labels = paste0(1:20,"n"),rootnode_name = "Root")
-ggtree(equal_tree) +geom_nodelab(geom = "label", node = "all") 
+equal_tree = CreateEqualTree(cell_labels = paste0(1:20,"n"),rootnode_name = "Root")
+#ggtree(equal_tree) +geom_nodelab(geom = "label", node = "all") 
 
 ```
 

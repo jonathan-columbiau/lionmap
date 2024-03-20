@@ -7,11 +7,11 @@
 #' Recommended to keep as "Unmapped".
 #'
 #' @return Tree in treedata format.
+#' @importFrom tidytree as.treedata
 #' @export
 #'
 #' @examples
 #' equal_tree = lionmap::CreateEqualTree(cell_labels = paste0(1:20,"n"),rootnode_name = "Root")
 CreateEqualTree <- function(cell_labels, rootnode_name = "Rootnode") {
-  CreateHierarchy(df_hierarchy = data.frame(parent = rootnode_name,
-                                            node = cell_labels))
+  data.frame(parent = rootnode_name, node = cell_labels) %>% as.treedata()
 }
