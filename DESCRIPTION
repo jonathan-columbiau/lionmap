@@ -12,6 +12,10 @@ URL: https://github.com/jonathan-columbiau/lionmap,
     https://jonathan-columbiau.github.io/lionmap/
 BugReports: https://github.com/jonathan-columbiau/lionmap/issues
 Depends: 
+Imports:
+    dplyr,
+    tidyr,
+    tidytree,
     caret,
     data.tree,
     e1071,
@@ -24,10 +28,6 @@ Depends:
     stats,
     stringr,
     testthat
-Imports:
-    dplyr,
-    tidyr,
-    tidytree
 Suggests: 
     kableExtra,
     ggplot2,

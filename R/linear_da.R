@@ -4,6 +4,8 @@
 #' @param celltype_labels Celltype labels in vector
 #'
 #' @return linear_da model trained on evenly split dataset (upsamples if classes aren't evenly split)
+#' @importFrom caret upSample
+#' @importFrom MASS lda
 #' @keywords internal
 #'
 #' @examples
@@ -15,7 +17,7 @@
 #' ex_model = linear_da(dataset, labels)
 linear_da <- function(reference_dataset, celltype_labels) {
   #upsample minority class to make class frequencies equal
-  reference_dataset <- caret::upSample(x = reference_dataset, y = celltype_labels, yname = "celltype_labels")
-  pairwise_model <- MASS::lda(celltype_labels ~ ., data = reference_dataset)
+  reference_dataset <- upSample(x = reference_dataset, y = celltype_labels, yname = "celltype_labels")
+  pairwise_model <- lda(celltype_labels ~ ., data = reference_dataset)
   pairwise_model
 }

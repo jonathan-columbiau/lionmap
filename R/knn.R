@@ -4,6 +4,8 @@
 #' @param celltype_labels Celltype labels in vector
 #'
 #' @return knn model trained on evenly split dataset (upsamples if classes aren't evenly split)
+#' @importFrom caret upSample
+#' @importFrom caret knn3
 #' @keywords internal
 #'
 #' @examples
@@ -15,7 +17,7 @@
 #' ex_model = knn(dataset, labels)
 knn <- function(reference_dataset, celltype_labels) {
   #upsample minority class to make class frequencies equal
-  reference_dataset <- caret::upSample(x = reference_dataset, y = celltype_labels, yname = "celltype_labels")
-  pairwise_model <- caret::knn3(celltype_labels ~ ., data = reference_dataset, k = 5)
+  reference_dataset <- upSample(x = reference_dataset, y = celltype_labels, yname = "celltype_labels")
+  pairwise_model <- knn3(celltype_labels ~ ., data = reference_dataset, k = 5)
   pairwise_model
 }

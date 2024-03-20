@@ -4,6 +4,8 @@
 #' @param celltype_labels Celltype labels in vector
 #'
 #' @return linear_svm model trained on evenly split dataset (upsamples if classes aren't evenly split)
+#' @importFrom caret upSample
+#' @importFrom e1071 svm
 #' @keywords internal
 #'
 #' @examples
@@ -14,7 +16,7 @@
 #' dataset = dataset[,1:4]
 #' ex_model = linear_svm(dataset, labels)
 linear_svm <- function(reference_dataset, celltype_labels) {
-  reference_dataset <- caret::upSample(x = reference_dataset, y = celltype_labels, yname =  "celltype_labels")
-  pairwise_model <- e1071::svm(celltype_labels ~ ., data = reference_dataset, kernel = "linear", scale = F)
+  reference_dataset <- upSample(x = reference_dataset, y = celltype_labels, yname =  "celltype_labels")
+  pairwise_model <- svm(celltype_labels ~ ., data = reference_dataset, kernel = "linear", scale = F)
   pairwise_model
 }
