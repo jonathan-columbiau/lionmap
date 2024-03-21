@@ -118,16 +118,15 @@ and consider each element as equally likely to occur. To get a
 classification we’ll need to perform 20*(20 - 1) / 2 = 190
 comparisons.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">equal_tree</span> <span class="op">=</span> <span class="fu">lionmap</span><span class="fu">::</span><span class="fu"><a href="../reference/CreateEqualTree.html">CreateEqualTree</a></span><span class="op">(</span>cell_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,<span class="st">"n"</span><span class="op">)</span>,rootnode_name <span class="op">=</span> <span class="st">"Root"</span><span class="op">)</span></span>
-<span><span class="fu">ggtree</span><span class="op">(</span><span class="va">equal_tree</span><span class="op">)</span> <span class="op">+</span><span class="fu">geom_nodelab</span><span class="op">(</span>geom <span class="op">=</span> <span class="st">"label"</span>, node <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="tree_vignette_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
+<code class="sourceCode R"><span><span class="va">equal_tree</span> <span class="op">=</span> <span class="fu"><a href="../reference/CreateEqualTree.html">CreateEqualTree</a></span><span class="op">(</span>cell_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,<span class="st">"n"</span><span class="op">)</span>,rootnode_name <span class="op">=</span> <span class="st">"Root"</span><span class="op">)</span></span>
+<span><span class="co">#ggtree(equal_tree) +geom_nodelab(geom = "label", node = "all") </span></span></code></pre></div>
 <p>Alternatively, let’ say we can group the 20 nodes into 4 groups each
 with 5 nodes, and these groups can be grouped into two groups each with
 2 nodes, and these 2 nodes group together.</p>
 <p>You can manually create a tree that looks like this with the
 following code:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tree_df</span> <span class="op">=</span> <span class="fu">tibble</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">tree_df</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>            parent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p1"</span>,<span class="st">"p1"</span>,<span class="st">"p1"</span>,<span class="st">"p1"</span>,</span>
 <span>                       <span class="st">"p2"</span>,<span class="st">"p2"</span>,<span class="st">"p2"</span>,<span class="st">"p2"</span>,<span class="st">"p2"</span>,<span class="st">"p3"</span>,<span class="st">"p3"</span>,<span class="st">"p3"</span>,<span class="st">"p3"</span>,<span class="st">"p3"</span>,</span>
 <span>                       <span class="st">"p4"</span>,<span class="st">"p4"</span>,<span class="st">"p4"</span>,<span class="st">"p4"</span>,<span class="st">"p4"</span>,<span class="st">"gp1"</span>,<span class="st">"gp1"</span>,<span class="st">"gp2"</span>,</span>
@@ -137,7 +136,7 @@ following code:</p>
 <span>                       <span class="st">"n15"</span>,<span class="st">"n16"</span>,<span class="st">"n17"</span>,<span class="st">"n18"</span>,<span class="st">"n19"</span>,<span class="st">"n20"</span>,<span class="st">"p1"</span>,<span class="st">"p2"</span>,</span>
 <span>                       <span class="st">"p3"</span>,<span class="st">"p4"</span>,<span class="st">"gp1"</span>,<span class="st">"gp2"</span>,<span class="st">"rootnode"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu">ggtree</span><span class="op">(</span><span class="fu">treeio</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ape/man/as.phylo.html" class="external-link">as.phylo</a></span><span class="op">(</span><span class="va">tree_df</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_nodelab</span><span class="op">(</span>geom <span class="op">=</span> <span class="st">"label"</span>, node <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span> </span></code></pre></div>
+<span><span class="fu">ggtree</span><span class="op">(</span><span class="fu"><a href="../reference/CreateHierarchy.html">CreateHierarchy</a></span><span class="op">(</span>df_hierarchy <span class="op">=</span> <span class="va">tree_df</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_nodelab</span><span class="op">(</span>geom <span class="op">=</span> <span class="st">"label"</span>, node <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span> </span></code></pre></div>
 <p><img src="tree_vignette_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 <p>Or, you can use the helper function CreateHierarchy, which takes in a
 csv file with the columns “parent” and “node”, and provides gives the
