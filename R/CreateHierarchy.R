@@ -9,7 +9,7 @@
 #'
 #' @importFrom dplyr select
 #' @importFrom tibble as_tibble
-#' @importFrom tidytree as.treedata
+#' @importFrom treeio as.treedata
 #' @export
 #'
 #' @examples tree_df = data.frame(
@@ -49,3 +49,12 @@ CreateHierarchy <- function(csv_file_path = NULL, df_hierarchy = NULL) {
   }
   tree_tidy
 }
+
+
+
+
+
+
+
+
+
