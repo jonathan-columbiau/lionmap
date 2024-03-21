@@ -50,7 +50,7 @@ Alternatively, let' say we can group the 20 nodes into 4 groups each with 5 node
 You can manually create a tree that looks like this with the following code:
 
 ```{r}
-tree_df = tibble(
+tree_df = data.frame(
             parent = c("p1","p1","p1","p1","p1",
                        "p2","p2","p2","p2","p2","p3","p3","p3","p3","p3",
                        "p4","p4","p4","p4","p4","gp1","gp1","gp2",
@@ -60,7 +60,7 @@ tree_df = tibble(
                        "n15","n16","n17","n18","n19","n20","p1","p2",
                        "p3","p4","gp1","gp2","rootnode")
 )
-ggtree(treeio::as.phylo(tree_df)) + geom_nodelab(geom = "label", node = "all") 
+ggtree(CreateHierarchy(df_hierarchy = tree_df)) + geom_nodelab(geom = "label", node = "all") 
 ```
 
 Or, you can use the helper function CreateHierarchy, which takes in a csv file with the columns "parent" and "node", and provides gives the relationships between each node with its parent node in the tree. The function will return a TreeData object, which you can use with the functions in Lionmap.
