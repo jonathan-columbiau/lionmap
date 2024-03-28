@@ -46,7 +46,7 @@ an equal tree for you.
 possible_cell_classes = train_ex_metadata$seurat_annotations %>% unique()
 equal_tree = CreateEqualTree(cell_labels = possible_cell_classes)
 #OPTIONAL: let's visualize the tree we created (have to install the ggtree package on bioconductor to do this)
-#ggtree(equal_tree) +geom_nodelab(geom = "label", node = "all") 
+ggtree(equal_tree) +geom_nodelab(geom = "label", node = "all") 
 ```
 
 Awesome, now we can find marker genes using our reference dataset. The
