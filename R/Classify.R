@@ -47,7 +47,7 @@
 #'
 #'
 #'
-function (bpcells_query, models, tree_struc, prop_max_threshold = 0.66)
+Classify <- function (bpcells_query, models, tree_struc, prop_max_threshold = 0.66)
 {
   rootnode <- tree_struc@phylo %>% rootnode() %>% nodelab(tree_struc,
                                                           .)
