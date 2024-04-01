@@ -13,5 +13,5 @@
 #' @examples
 #' equal_tree = lionmap::CreateEqualTree(cell_labels = paste0(1:20,"n"),rootnode_name = "Root")
 CreateEqualTree <- function(cell_labels, rootnode_name = "Rootnode") {
-  data.frame(parent = rootnode_name, node = cell_labels) %>% as.treedata()
+  data.frame(parent = rootnode_name, node = cell_labels) %>% add_row(parent = rootnode_name, node = rootnode_name) %>%  CreateHierarchy(df_hierarchy = .)
 }

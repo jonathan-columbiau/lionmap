@@ -92,6 +92,8 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
 
   #add functionality for same-level classification only (tree structure is useless in this case)
   if(length(internal_nodes) == 1) {
+
+
     for (i in 1:length(child_node_labels)) {
       descendant_tip_nodes[[i]] <- child_node_labels[i]
     }
@@ -107,6 +109,7 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
   }
 
   for (i in 1:length(direct_child_nodes)) { #iterate over each parent node
+
     specified_ancestor_node <- names(direct_child_nodes)[i]
     direct_children_of_specified_ancestor_nodes_vector <- direct_child_nodes[[specified_ancestor_node]]
     child_node_round_robin_matchups <- pairwise_combinations(direct_children_of_specified_ancestor_nodes_vector)
@@ -143,10 +146,15 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
       subset_atlas <-ref_bpcells[, c(cells_node_1, cells_node_2)]
       celltype_labels <- c(rep(node1, length(cells_node_1)), rep(node2, length(cells_node_2))) %>% as.factor()
       pairwise_markers <- BPCells::marker_features(subset_atlas, celltype_labels, method = "wilcoxon")
-      #remove genes with less than .5 logCPM in either class
-      pairwise_markers %<>% filter(foreground_mean > .5 |background_mean > .5) %>% select(-background) %>% distinct(feature, .keep_all = TRUE) %>% mutate(log2_fc = log2(foreground_mean/background_mean))
+      if(typeof(pairwise_markers$feature) == "integer") {
+        pairwise_markers$feature <- rownames(subset_atlas)[pairwise_markers$feature]
+      }
+      #for some reason this isn't returning gene names at high levels of rownames so changed if integer to character
 
-      #get log2fc, and select the top marker genes with the highest abs value log2fc
+      #remove genes with less than .5 logCPM in either class
+      pairwise_markers %<>% filter(foreground_mean > .5 |background_mean > .5) %>% dplyr::select(-background) %>% distinct(feature, .keep_all = TRUE) %>% mutate(log2_fc = log2(foreground_mean/background_mean))
+
+      #get log2fc, and dplyr::select the top marker genes with the highest abs value log2fc
       pairwise_markers %<>% mutate(abs_log2_fc = log2(foreground_mean/background_mean) %>% abs()) %>% arrange(abs_log2_fc) %>% slice_max(abs_log2_fc, n = n_genes) %>% pull(feature)
       list_with_matchups[[j]] <- c(list_with_matchups[[j]],list(marker_genes = pairwise_markers %>% as.character()))
 
@@ -156,6 +164,7 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
   }
 
   #set naming and return list
+
   names(marker_genes) <- names(direct_child_nodes)
   marker_genes
 
