@@ -148,7 +148,7 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, n_genes = 50, metada
 
       #get log2fc, and select the top marker genes with the highest abs value log2fc
       pairwise_markers %<>% mutate(abs_log2_fc = log2(foreground_mean/background_mean) %>% abs()) %>% arrange(abs_log2_fc) %>% slice_max(abs_log2_fc, n = n_genes) %>% pull(feature)
-      list_with_matchups[[j]] <- c(list_with_matchups[[j]],list(marker_genes = pairwise_markers))
+      list_with_matchups[[j]] <- c(list_with_matchups[[j]],list(marker_genes = pairwise_markers %>% as.character()))
 
     }
     marker_genes[[i]] <-  list_with_matchups
