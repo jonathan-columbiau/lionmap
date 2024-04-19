@@ -139,7 +139,7 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, metadata_cluster_col
       if(length(cells_node_1) > min_n_cells_sampled) {
         cells_node_1 <- cells_node_1 %>% sample(min_n_cells_sampled)
       } else {
-        stop("Not enough cells of one group"))
+        stop("Not enough cells of one group")
         next
       }
       if(length(cells_node_2) > min_n_cells_sampled) {
