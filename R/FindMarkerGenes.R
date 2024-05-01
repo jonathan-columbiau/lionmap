@@ -7,7 +7,6 @@
 #' @param metadata_cell_id_column The name of the column in the metadata giving the cell IDs.
 #' @param min_n_cells_sampled Minimum  number of cells to find marker genes per class.
 #' @param max_n_cells_sampled Max number of cells to find marker genes per class if greater than threshold.
-#' @param p_val_threshold P-value threshold to include marker genes or not.
 #'
 #'
 #' @return A list providing marker genes that distinguish each pairwise
@@ -38,7 +37,7 @@
 #' possible_cell_classes = train_ex_metadata$seurat_annotations %>% unique()
 #' equal_tree = CreateEqualTree(cell_labels = possible_cell_classes)
 #' marker_genes = FindMarkerGenes(ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_id_column = "cell_label")
-FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, metadata_cluster_column = "cell_type", metadata_cell_id_column = "cellid",min_n_cells_sampled = 100, max_n_cells_sampled = 5000, p_val_threshold = .05, n_marker_genes_per_comparison = 50) {
+FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, metadata_cluster_column = "cell_type", metadata_cell_id_column = "cellid",min_n_cells_sampled = 100, max_n_cells_sampled = 5000, n_marker_genes_per_comparison = 50) {
 
   #unit test: ref_metadata is a dataframe
   test_that("ref_metadata is a dataframe (not a tibble)", {
