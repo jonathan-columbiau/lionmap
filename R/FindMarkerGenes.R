@@ -10,7 +10,8 @@
 #'
 #'
 #' @return A list providing marker genes that distinguish each pairwise
-#' combination of celltypes, significant to the p-value threshold,
+#' combination of celltypes, whether p-value significant or not, the top certain
+#' number of marker genes arranged by log fold change. Given
 #' at each level of the hierarchy in the tree you provided.
 #'
 #' @importFrom tidytree child
@@ -182,7 +183,7 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, metadata_cluster_col
       pairwise_markers %<>% mutate(abs_log2_fc = log2(foreground_mean/background_mean) %>% abs()) %>% slice_max(n = n_marker_genes_per_comparison, order_by = abs_log2_fc) %>%  pull(feature)
       list_with_matchups[[j]] <- c(list_with_matchups[[j]],list(marker_genes = pairwise_markers %>% as.character()))
     }
-    marker_genes[[i]] <-  list_with_matchups.
+    marker_genes[[i]] <-  list_with_matchups
 
   }
 
