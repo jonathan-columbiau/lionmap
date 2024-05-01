@@ -6,7 +6,8 @@
 #' @param tree Tree structure in treedata format.
 #' @param metadata_cluster_column Metadata celltype label column.
 #' @param metadata_cell_id_column Metadata cell ID column
-#' @param n_cells_sampled Number of cells used in pairwise model determination for each class.
+#' @param min_n_cells_sampled Minimum num of cells used in pairwise model determination for each class.
+#' @param max_n_cells_sampled Maximum of cells used in pairwise model determination for each class.
 #' @param models_to_include Optional vector which provides the names of models to include. If using
 #' this parameter, include a subset of the following (make sure the names match or it won't work):
 #' "linear_svm", "polynomial_svm", "naive_bayes", "ridge", "lasso", "elastic_net",
@@ -101,12 +102,6 @@ GetModels <- function(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cl
       #z-score dataset
       subset_dataset <- subset_dataset %>% BPCells::add_cols(-avg_log_exp) %>% BPCells::multiply_cols(1/stdev)
       #sample n_cells_sampled # of cells from each node
-      if(length(cells_node_1) > n_cells_sampled) {
-        cells_node_1 <- cells_node_1 %>% sample(n_cells_sampled)
-      }
-      if(length(cells_node_2) > n_cells_sampled) {
-        cells_node_2 <- cells_node_2 %>% sample(n_cells_sampled)
-      }
       subset_dataset <- subset_dataset[c(cells_node_1,cells_node_2),]
 
 
