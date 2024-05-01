@@ -28,7 +28,7 @@
 #' metadata_cluster_column = "cluster_label",
 #' metadata_cell_id_column = "cell_label",
 #' n_cells_sampled = 500, models_to_include = NULL, npcs = 5)
-GetModels <- function(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cluster_column = "cluster_label", metadata_cell_id_column = "cell_label", n_cells_sampled = 500, models_to_include = NULL, npcs = 5) {
+GetModels <- function(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cluster_column = "cluster_label", metadata_cell_id_column = "cell_label", min_n_cells_sampled = 100, max_n_cells_sampled = 5000, models_to_include = NULL, npcs = 5) {
   #unit test: ref_metadata is a dataframe
   test_that("ref_metadata is a dataframe (not a tibble)", {
     # Assuming ref_metadata is defined in your environment
@@ -70,6 +70,24 @@ GetModels <- function(marker_genes, ref_bpcells, ref_metadata, tree, metadata_cl
       #if on tip node
       cells_node_1 <- ref_metadata[ref_metadata[,metadata_cluster_column] %in% c(node1_tip_nodes),metadata_cell_id_column]
       cells_node_2 <- ref_metadata[ref_metadata[,metadata_cluster_column] %in% c(node2_tip_nodes),metadata_cell_id_column]
+
+      if(length(cells_node_1) < min_n_cells_sampled) {
+        stop(paste0("Error: Not enough cells of one group in a matchup - ", node1))
+      }
+      if(length(cells_node_2) < min_n_cells_sampled) {
+        stop(paste0("Error: Not enough cells of one group in a matchup - ", node2))
+      }
+
+      #now check if > max_n_cells_sampled cells in each group, in which case sample up to max_n_cells_sampled
+      if(length(cells_node_1) < max_n_cells_sampled | length(cells_node_2) < max_n_cells_sampled) {
+        num_cells = min(length(cells_node_1),length(cells_node_2))
+        cells_node_1 <- cells_node_1 %>% sample(num_cells)
+        cells_node_2 <- cells_node_2 %>% sample(num_cells)
+      } else {
+        #sample max_n_cells_sampled cells if both have >= max_n_cells_sampled
+        cells_node_1 <- cells_node_1 %>% sample(max_n_cells_sampled)
+        cells_node_2 <- cells_node_2 %>% sample(max_n_cells_sampled)
+      }
 
       matchup_marker_genes <- marker_genes[[i]][[j]]$marker_genes
       #subset to only have particular genes and cells. Cells are ordered on whether they're from cell 1 or cell 2.

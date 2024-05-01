@@ -134,18 +134,11 @@ FindMarkerGenes = function(ref_bpcells, ref_metadata, tree, metadata_cluster_col
       cells_node_1 <- ref_metadata[ref_metadata[,metadata_cluster_column] %in% c(node1_tip_nodes),metadata_cell_id_column]
       cells_node_2 <- ref_metadata[ref_metadata[,metadata_cluster_column] %in% c(node2_tip_nodes),metadata_cell_id_column]
       #amended for metric 2 - if not enough mapped clusters (at the most granular level) are present, skip this pairwise combo of finding marker genes
-      if(length(cells_node_1) > min_n_cells_sampled) {
-        cells_node_1 <- cells_node_1 %>% sample(min_n_cells_sampled)
-      } else {
-        list_with_matchups[[j]] <- c(list_with_matchups[[j]],list(marker_genes = "NA - Not enough cells of one group"))
-        next
+      if(length(cells_node_1) < min_n_cells_sampled) {
+        stop(paste0("Error: Not enough cells of one group in a matchup - ", node1))
       }
-      if(length(cells_node_2) > min_n_cells_sampled) {
-        cells_node_2 <- cells_node_2 %>% sample(min_n_cells_sampled)
-      } else {
-        stop(paste0("Error: Not enough cells of one group in a matchup - either ",node1, "or ", node2))
-        list_with_matchups[[j]] <- c(list_with_matchups[[j]],list(marker_genes = "NA - Not enough cells of one group"))
-        next
+      if(length(cells_node_2) < min_n_cells_sampled) {
+        stop(paste0("Error: Not enough cells of one group in a matchup - ", node2))
       }
 
       #now check if > max_n_cells_sampled cells in each group, in which case sample up to max_n_cells_sampled
