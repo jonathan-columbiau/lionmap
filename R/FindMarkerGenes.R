@@ -1,3 +1,4 @@
+#' A function that gives marker genes
 #' @param ref_bpcells A GE reference dataset in BPCells format.
 #' @param ref_metadata A dataframe with metadata that includes a column providing
 #' celltype labels used for classification and a column providing cell ids.

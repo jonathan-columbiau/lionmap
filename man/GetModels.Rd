@@ -11,7 +11,8 @@ GetModels(
   tree,
   metadata_cluster_column = "cluster_label",
   metadata_cell_id_column = "cell_label",
-  n_cells_sampled = 500,
+  min_n_cells_sampled = 100,
+  max_n_cells_sampled = 5000,
   models_to_include = NULL,
   npcs = 5
 )
@@ -29,7 +30,9 @@ GetModels(
 
 \item{metadata_cell_id_column}{Metadata cell ID column}
 
-\item{n_cells_sampled}{Number of cells used in pairwise model determination for each class.}
+\item{min_n_cells_sampled}{Minimum num of cells used in pairwise model determination for each class.}
+
+\item{max_n_cells_sampled}{Maximum of cells used in pairwise model determination for each class.}
 
 \item{models_to_include}{Optional vector which provides the names of models to include. If using
 this parameter, include a subset of the following (make sure the names match or it won't work):

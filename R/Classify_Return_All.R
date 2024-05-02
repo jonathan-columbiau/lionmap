@@ -4,7 +4,6 @@
 #' @param bpcells_query Query dataset already aligned to reference dataset used to find marker genes and create models.
 #' @param models Models created through GetMarkerGenes function.
 #' @param tree Tree used in model creation.
-#' @param prop_max_threshold Proportion of evidence required for a test
 #'
 #' @return A vector providing classifications of cells in bpcells_query in the same order.
 #' Performs specific unit testing on each run through.
@@ -44,10 +43,32 @@
 #' marker_genes = FindMarkerGenes(ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_id_column = "cell_label")
 #' models <- GetModels(marker_genes = marker_genes, ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
 #' query_classifications = Classify_Return_All(bpcells_query = test_ex_data_bpcells,models = models,tree_struc = equal_tree)
-#' query_classifications = Classify(bpcells_query = test_ex_data_bpcells,models = models,tree_struc = equal_tree)
+#'
+#'
+#'change classify so it gives onfidence score at each level of the hierarchy
+#'a cell is classified at.
+#'Returns a dataframe with the following columns for each classification step
+#'performed
+#'
+#'
+#
+#
 
-Classify <- function (bpcells_query, models, tree_struc, prop_max_threshold = 0.66)
+Classify_Return_All <- function (bpcells_query, models, tree_struc)
 {
+  returned_df = matrix(nrow = 0, ncol = 6) %>% as.data.frame()
+  colnames(returned_df) = c("cell_id","best_classification",
+                            "count",
+                            "max_possible_score",
+                            "cur_internal_node",
+                            "is_final_classification_for_cell")
+  class(returned_df$cell_id) = "character"
+  class(returned_df$best_classification) = "character"
+  class(returned_df$count) = "numeric"
+  class(returned_df$max_possible_score) = "numeric"
+  class(returned_df$cur_internal_node) = "character"
+  class(returned_df$is_final_classification_for_cell) = "logical"
+
   rootnode <- tree_struc@phylo %>% rootnode() %>% nodelab(tree_struc,
                                                           .)
   all_nodes <- offspring(tree_struc, rootnode) %>% nodelab(tree_struc,
@@ -90,7 +111,7 @@ Classify <- function (bpcells_query, models, tree_struc, prop_max_threshold = 0.
       next
     }
     res_list <- vector(mode = "list", length = length(models[[node]]))
-    for (i in 1:length(models[[node]])) {
+    for (i in 1:length(models[[node]])) { #returns list of dfs with results of each pairwise comparison at an internal node
       first_lev_avg_counts <- models[[node]][[i]]$avg_log_exp
       first_lev_std_counts <- models[[node]][[i]]$stdev
       first_lev_markers <- models[[node]][[i]]$pc_loadings %>%
@@ -109,51 +130,87 @@ Classify <- function (bpcells_query, models, tree_struc, prop_max_threshold = 0.
         set_colnames(paste0(colnames(.), "_", i)) %>%
         t()
     }
-    count_threshold <- (child(tree_struc, node) %>% length() -
-                          1) * length(models[[1]][[1]][["Models"]]) * prop_max_threshold
-    obs_above_threshold <- res_list %>% rbind.fill.matrix(res_list) %>%
-      as.data.frame() %>% pivot_longer(everything(), names_to = "obs",
-                                       values_to = "class") %>% group_by(obs) %>% count(class,
-                                                                                        name = "count") %>% group_by(obs) %>% filter(count ==
-                                                                                                                                       max(count))
-    tied_obs <- obs_above_threshold %>% group_by(obs) %>%
-      summarise(n = n()) %>% filter(n > 1) %>% pull(obs)
-    obs_above_threshold <- obs_above_threshold %>% filter(!obs %in%
-                                                            tied_obs) %>% filter(count >= count_threshold) %>%
-      pull(class, name = obs)
-    tip_cells <- obs_above_threshold[obs_above_threshold %in%
-                                       tip_nodes]
+    max_possible_count_cur_internal_node <- (child(tree_struc, node) %>% length() -
+                                               1) * length(models[[1]][[1]][["Models"]])
+    best_classification_per_obs_with_counts <- res_list %>%
+      rbind.fill.matrix(res_list) %>%
+      as.data.frame() %>%
+      pivot_longer(everything(), names_to = "obs",
+                   values_to = "class") %>%
+      group_by(obs) %>% count(class, name = "count") %>%
+      group_by(obs) %>%
+      dplyr::filter(count == max(count))
+
+
+    best_classification_per_obs_with_counts %<>% rename(cell_id = obs, best_classification= class)
+    best_classification_per_obs_with_counts$max_possible_score = max_possible_count_cur_internal_node
+    best_classification_per_obs_with_counts$cur_internal_node = node
+
+    tied_obs <- best_classification_per_obs_with_counts %>%
+      group_by(cell_id) %>%
+      summarise(n = n()) %>%
+      filter(n > 1) %>%
+      pull(cell_id)
+
+    best_classification_per_obs_with_counts <- best_classification_per_obs_with_counts %>%
+      filter(!cell_id %in% tied_obs) %>% mutate(confidence_score = count/max_possible_score)
+
+    best_classification_per_obs_with_counts$is_final_classification_for_cell = F
+
+
+    #write NA for and best_classification + confidence_score in case of ties
+    #add these columns c("cell_id", "cur_internal_node",
+    #"best_classification", "count", "max_possible_score",
+    #"confidence_score","is_final_classification_for_cell")
+    cur_internal_node = node
+
+    #special to return_full_df = T
+    if(length(tied_obs) > 0) {
+      tied_obs_returned = data.frame("cell_id" = tied_obs,
+                                     cur_internal_node = node,
+                                     count = NA,
+                                     best_classification = "NA/Tie",
+                                     confidence_score = NA,
+                                     max_possible_score = max_possible_count_cur_internal_node,
+                                     is_final_classification_for_cell = TRUE)
+        returned_df = bind_rows(returned_df, tied_obs_returned)
+    }
+
+
+    tip_cells <- best_classification_per_obs_with_counts$cell_id[best_classification_per_obs_with_counts$best_classification %in%
+                                                                   tip_nodes]
+    #special for returned_df
+    if(length(tip_cells) != 0) {
+      tip_cell_obs_returned = best_classification_per_obs_with_counts %>% filter(cell_id %in% tip_cells)
+      tip_cell_obs_returned$is_final_classification_for_cell = T
+      returned_df = bind_rows(returned_df, tip_cell_obs_returned)
+    }
+
     final_classifications <- final_classifications %>% append(tip_cells)
-    stuck_cells <- rownames(first_lev_bpcells)[!rownames(first_lev_bpcells) %in%
-                                                 names(final_classifications) & !rownames(first_lev_bpcells) %in%
-                                                 names(obs_above_threshold)] %>% set_names(., .)
-    stuck_cells <- rep(node, length(stuck_cells))
-    names(stuck_cells) <- rownames(first_lev_bpcells)[!rownames(first_lev_bpcells) %in%
-                                                        names(final_classifications) & !rownames(first_lev_bpcells) %in%
-                                                        names(obs_above_threshold)]
+
+    stuck_cells <- tied_obs_returned$cell_id %>% unique()
+    names(stuck_cells) = stuck_cells
     final_classifications <- final_classifications %>% append(stuck_cells)
-    if (obs_above_threshold[!obs_above_threshold %in% tipnodes &
-                            !obs_above_threshold %in% names(final_classifications)] %>%
-        length() > 0) {
-      obs_above_threshold <- obs_above_threshold[obs_above_threshold %in%
-                                                   internal_nodes]
-      obs_above_threshold <- split(obs_above_threshold,
-                                   obs_above_threshold)
+
+    remaining_cells = best_classification_per_obs_with_counts %>% filter(!cell_id %in% tip_cells)
+    if (nrow(remaining_cells) > 0) {
       test_that("all remaining cells assigned to internal nodes",
                 {
-                  expect_contains(internal_nodes, names(obs_above_threshold))
+                  expect_contains(internal_nodes, remaining_cells$best_classification)
                 })
-      for (name in names(obs_above_threshold)) {
-        internal_node_assignment[[name]] <- obs_above_threshold[[name]] %>%
-          names()
+      for (name in remaining_cells$best_classification %>% unique()) {
+        #add to internal_node_assignment list
+        internal_node_assignment[[name]] <- remaining_cells$cell_id
       }
+      #special to returned_df = T
+      returned_df = bind_rows(returned_df, remaining_cells)
     }
   }
   test_that("expected number of elements returned", {
     expect_equal(length(final_classifications), ncol(bpcells_query))
   })
   final_classifications[match(colnames(bpcells_query), names(final_classifications))]
+  #special to returned_df = T
+  return(returned_df)
 }
-
-
 
