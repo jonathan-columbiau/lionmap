@@ -177,22 +177,28 @@ Classify_Return_All <- function (bpcells_query, models, tree_struc)
     }
 
 
-    tip_cells <- best_classification_per_obs_with_counts$cell_id[best_classification_per_obs_with_counts$best_classification %in%
+    tip_cell_ids <- best_classification_per_obs_with_counts$cell_id[best_classification_per_obs_with_counts$best_classification %in%
                                                                    tip_nodes]
+    tip_cell_classifications <- best_classification_per_obs_with_counts$best_classification[match(tip_cell_ids,best_classification_per_obs_with_counts$cell_id)]
+
+    names(tip_cell_classifications) <- tip_cell_ids
     #special for returned_df
-    if(length(tip_cells) != 0) {
-      tip_cell_obs_returned = best_classification_per_obs_with_counts %>% filter(cell_id %in% tip_cells)
+    if(length(tip_cell_ids) != 0) {
+      tip_cell_obs_returned = best_classification_per_obs_with_counts %>% filter(cell_id %in% tip_cell_ids)
       tip_cell_obs_returned$is_final_classification_for_cell = T
       returned_df = bind_rows(returned_df, tip_cell_obs_returned)
     }
 
-    final_classifications <- final_classifications %>% append(tip_cells)
 
-    stuck_cells <- tied_obs_returned$cell_id %>% unique()
-    names(stuck_cells) = stuck_cells
+    final_classifications <- final_classifications %>% append(tip_cell_classifications)
+
+
+
+    stuck_cells = rep(node,length(tied_obs_returned$cell_id %>% unique())) #cells stuck at current internal node
+    names(stuck_cells) = tied_obs_returned$cell_id %>% unique()
     final_classifications <- final_classifications %>% append(stuck_cells)
 
-    remaining_cells = best_classification_per_obs_with_counts %>% filter(!cell_id %in% tip_cells)
+    remaining_cells = best_classification_per_obs_with_counts %>% filter(!cell_id %in% tip_cell_ids)
     if (nrow(remaining_cells) > 0) {
       test_that("all remaining cells assigned to internal nodes",
                 {
@@ -206,10 +212,9 @@ Classify_Return_All <- function (bpcells_query, models, tree_struc)
       returned_df = bind_rows(returned_df, remaining_cells)
     }
   }
-  test_that("expected number of elements returned", {
+  test_that("expected number of elements (all elements) in final_classifications vector", {
     expect_equal(length(final_classifications), ncol(bpcells_query))
   })
-  final_classifications[match(colnames(bpcells_query), names(final_classifications))]
   #special to returned_df = T
   return(returned_df)
 }
