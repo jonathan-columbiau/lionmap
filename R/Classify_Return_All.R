@@ -174,6 +174,9 @@ Classify_Return_All <- function (bpcells_query, models, tree_struc)
                                      max_possible_score = max_possible_count_cur_internal_node,
                                      is_final_classification_for_cell = TRUE)
         returned_df = bind_rows(returned_df, tied_obs_returned)
+        stuck_cells = rep(node,length(tied_obs_returned$cell_id %>% unique())) #cells stuck at current internal node
+        names(stuck_cells) = tied_obs_returned$cell_id %>% unique()
+        final_classifications <- final_classifications %>% append(stuck_cells)
     }
 
 
@@ -187,16 +190,15 @@ Classify_Return_All <- function (bpcells_query, models, tree_struc)
       tip_cell_obs_returned = best_classification_per_obs_with_counts %>% filter(cell_id %in% tip_cell_ids)
       tip_cell_obs_returned$is_final_classification_for_cell = T
       returned_df = bind_rows(returned_df, tip_cell_obs_returned)
+      final_classifications <- final_classifications %>% append(tip_cell_classifications)
     }
 
 
-    final_classifications <- final_classifications %>% append(tip_cell_classifications)
 
 
 
-    stuck_cells = rep(node,length(tied_obs_returned$cell_id %>% unique())) #cells stuck at current internal node
-    names(stuck_cells) = tied_obs_returned$cell_id %>% unique()
-    final_classifications <- final_classifications %>% append(stuck_cells)
+
+
 
     remaining_cells = best_classification_per_obs_with_counts %>% filter(!cell_id %in% tip_cell_ids)
     if (nrow(remaining_cells) > 0) {
