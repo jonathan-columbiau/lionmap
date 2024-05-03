@@ -192,23 +192,18 @@ Classify_Return_All <- function (bpcells_query, models, tree_struc)
       returned_df = bind_rows(returned_df, tip_cell_obs_returned)
       final_classifications <- final_classifications %>% append(tip_cell_classifications)
     }
-
-
-
-
-
-
-
-
     remaining_cells = best_classification_per_obs_with_counts %>% filter(!cell_id %in% tip_cell_ids)
     if (nrow(remaining_cells) > 0) {
       test_that("all remaining cells assigned to internal nodes",
                 {
                   expect_contains(internal_nodes, remaining_cells$best_classification)
                 })
-      for (name in remaining_cells$best_classification %>% unique()) {
+      further_internal_nodes = remaining_cells$best_classification %>% unique()
+      for (k in 1:length(further_internal_nodes)) {
         #add to internal_node_assignment list
-        internal_node_assignment[[name]] <- remaining_cells$cell_id
+        cur_classified_node = further_internal_nodes[k]
+        cur_classified_node_cell_ids = remaining_cells$cell_id[remaining_cells$best_classification == cur_classified_node]
+        internal_node_assignment[[cur_classified_node]] <- cur_classified_node_cell_ids
       }
       #special to returned_df = T
       returned_df = bind_rows(returned_df, remaining_cells)
