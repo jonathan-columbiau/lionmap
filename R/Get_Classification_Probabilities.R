@@ -42,7 +42,7 @@
 #' equal_tree = CreateEqualTree(cell_labels = possible_cell_classes)
 #' marker_genes = FindMarkerGenes(ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_id_column = "cell_label")
 #' models <- GetModels(marker_genes = marker_genes, ref_bpcells = train_ex_data_bpcells, ref_metadata = train_ex_metadata, tree = equal_tree, metadata_cluster_column = "seurat_annotations", metadata_cell_label_column = "cell_label")
-#' query_classifications = Classify_Return_All(bpcells_query = test_ex_data_bpcells,models = models,tree_struc = equal_tree)
+#' query_classifications = Get_Classification_Probabilities(bpcells_query = test_ex_data_bpcells,models = models,tree_struc = equal_tree)
 #'
 #'
 #'change classify so it gives onfidence score at each level of the hierarchy
@@ -54,7 +54,7 @@
 #
 #
 
-Classify_Return_All <- function (bpcells_query, models, tree_struc)
+Get_Classification_Probabilities <- function (bpcells_query, models, tree_struc)
 {
   returned_df = matrix(nrow = 0, ncol = 6) %>% as.data.frame()
   colnames(returned_df) = c("cell_id","best_classification",
